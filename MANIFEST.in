@@ -1,0 +1,170 @@
+# Include package metadata and documentation
+include README.md
+include LICENSE
+include requirements.txt
+include mkdocs.yml
+
+# Include documentation (excluding generated site)
+recursive-include docs *.md
+recursive-include docs *.yml
+recursive-include docs *.yaml
+recursive-include docs *.css
+recursive-include docs *.js
+exclude docs/site
+recursive-exclude docs/site *
+
+# Include licenses
+recursive-include licenses *.md
+recursive-include licenses *.txt
+
+# Include source packages
+recursive-include src *.py
+recursive-include src *.md
+recursive-include src *.txt
+
+# Include tools directory structure (excluding sensitive files)
+recursive-include tools *.md
+recursive-include tools *.txt
+recursive-include tools *.exe
+recursive-include tools *.bat
+recursive-include tools *.template
+
+# Exclude sensitive credential files
+exclude tools/px/px.ini
+exclude config/*
+exclude credentials/*
+exclude ssh_keys/*
+exclude *.pem
+exclude *.key
+exclude *.crt
+exclude *.p12
+exclude *.pfx
+exclude *.conf
+global-exclude *credentials*
+global-exclude *password*
+global-exclude *secret*
+global-exclude *.log
+global-exclude *.pid
+global-exclude *.sock
+global-exclude *.tmp
+global-exclude *.temp
+global-exclude *.bak
+global-exclude *.backup
+global-exclude __pycache__
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude *.pyd
+global-exclude .pytest_cache
+global-exclude .coverage*
+global-exclude htmlcov
+global-exclude .tox
+global-exclude .nox
+global-exclude .venv
+global-exclude venv
+global-exclude .env
+global-exclude .git*
+include tools/README.md
+include tools/Setup.bat
+
+# Include PX tools (bundled proxy exe and template config)
+include tools/px/px.exe
+include tools/px/px.ini.template
+include tools/px/README.md
+# Exclude personal px.ini file
+exclude tools/px/px.ini
+
+# Include PsExec tools
+include tools/psexec/PsExec.exe
+include tools/psexec/PsExec64.exe
+include tools/psexec/README.md
+
+# Include scripts
+recursive-include tools/scripts *.py
+recursive-include tools/scripts *.ps1
+recursive-include tools/scripts *.bat
+
+# Exclude development and debug files
+exclude debug_*.py
+exclude diagnose_*.py
+exclude verify_*.py
+
+# Exclude build artifacts
+exclude build
+recursive-exclude build *
+exclude dist
+recursive-exclude dist *
+exclude __pycache__
+recursive-exclude __pycache__ *
+exclude *.pyc
+exclude *.pyo
+exclude *.pyd
+
+# Exclude IDE and OS files
+exclude .vscode
+recursive-exclude .vscode *
+exclude .idea
+recursive-exclude .idea *
+exclude .DS_Store
+exclude Thumbs.db
+
+# Exclude generated documentation
+exclude site
+recursive-exclude site *
+
+# Exclude virtual environments
+exclude .venv
+recursive-exclude .venv *
+exclude venv
+recursive-exclude venv *
+
+# Exclude git files
+exclude .git
+recursive-exclude .git *
+exclude .gitignore
+
+# Exclude local development files
+exclude local
+recursive-exclude local *
+exclude dev
+recursive-exclude dev *
+exclude debug
+recursive-exclude debug *
+
+# Exclude log files
+exclude *.log
+exclude logs
+recursive-exclude logs *
+
+# Exclude temporary files
+exclude *.tmp
+exclude *.temp
+exclude temp
+recursive-exclude temp *
+
+# Exclude credential files
+exclude *.key
+exclude *.pem
+exclude *.crt
+exclude ssh_keys
+recursive-exclude ssh_keys *
+exclude credentials
+recursive-exclude credentials *
+
+# Include licenses directory
+recursive-include licenses *.md
+recursive-include licenses *.txt
+
+# Include all source files
+recursive-include src *.py
+recursive-include src *.md
+
+# Include test files
+recursive-include tests *.py
+
+# Exclude cache and build artifacts
+global-exclude __pycache__
+global-exclude *.py[co]
+global-exclude .DS_Store
+global-exclude *.so
+global-exclude .git*
+global-exclude *.egg-info*

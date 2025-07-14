@@ -1,0 +1,176 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ssh-tools-suite"
+version = "2.1.0"
+authors = [
+    {name = "Nicholas Kozma", email = "Nicholas.Kozma@us.bosch.com"},
+]
+description = "Comprehensive SSH Tools Suite with Tunnel Manager and Third-Party Installer"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Win32 (MS Windows)",
+    "Environment :: X11 Applications :: Qt",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Internet",
+    "Topic :: System :: Networking",
+    "Topic :: Security",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Systems Administration",
+]
+keywords = ["ssh", "tunnel", "networking", "security", "gui", "rtsp", "vpn"]
+
+dependencies = [
+    "PySide6>=6.5.0",
+    "opencv-python>=4.8.0",
+    "paramiko>=2.8.0",
+    "cryptography>=3.4.0",
+    "requests>=2.28.0",
+    "psutil>=5.9.0",
+    "WMI>=1.5.1; sys_platform == 'win32'",
+    "pywin32>=305; sys_platform == 'win32'",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-qt>=4.0.0",
+    "pytest-mock>=3.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=22.0.0",
+    "flake8>=6.0.0",
+    "mypy>=1.0.0",
+    "pre-commit>=3.0.0",
+]
+docs = [
+    "mkdocs>=1.5.0",
+    "mkdocs-material>=9.0.0",
+    "mkdocstrings[python]>=0.22.0",
+    "mkdocs-gen-files>=0.5.0",
+    "mkdocs-literate-nav>=0.6.0",
+    "mkdocs-section-index>=0.3.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/NicholasKozma/ssh_tools_suite"
+Documentation = "https://nicholaskozma.github.io/ssh_tools_suite/"
+Repository = "https://github.com/NicholasKozma/ssh_tools_suite.git"
+"Bug Reports" = "https://github.com/NicholasKozma/ssh_tools_suite/issues"
+Changelog = "https://github.com/NicholasKozma/ssh_tools_suite/blob/main/CHANGELOG.md"
+
+[project.scripts]
+ssh-tunnel-manager = "ssh_tunnel_manager.__main__:main"
+ssh-tools-installer = "third_party_installer.__main__:main"
+
+[project.gui-scripts]
+ssh-tunnel-manager-gui = "ssh_tunnel_manager.gui:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["ssh_tunnel_manager*", "ssh_tools_common*", "third_party_installer*"]
+
+[tool.setuptools.package-data]
+"ssh_tunnel_manager" = ["*.md", "*.txt", "*.ini"]
+"ssh_tunnel_manager.gui" = ["assets/*", "components/*", "dialogs/*", "widgets/*"]
+"third_party_installer" = ["*.md", "*.txt", "*.ini"]
+"ssh_tools_common" = ["*.md", "*.txt", "*.ini"]
+
+[tool.black]
+line-length = 100
+target-version = ['py39']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = "-ra -q --strict-markers --strict-config"
+testpaths = ["tests"]
+filterwarnings = [
+    "error",
+    "ignore::UserWarning",
+    "ignore::DeprecationWarning",
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "gui: marks tests as GUI tests requiring display",
+]
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = [
+    "PySide6.*",
+    "cv2.*",
+    "paramiko.*",
+    "WMI.*",
+    "win32.*",
+]
+ignore_missing_imports = true
+
+[tool.coverage.run]
+source = ["src"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "*/__pycache__/*",
+    "*/build/*",
+    "*/dist/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
