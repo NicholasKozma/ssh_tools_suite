@@ -105,6 +105,10 @@ nav:
     - Managing Configurations: guides/managing-configurations.md
     - RTSP Streaming: guides/rtsp-streaming.md
     - Documentation Guide: guides/documentation-guide.md
+  - Security:
+    - Overview: security/README.md
+    - Security Issues: security/GITHUB_ISSUE_COMMAND_INJECTION.md
+    - Security Fixes: security/SECURITY_FIX_SUMMARY.md
   - API Reference: reference/
 
 extra:
