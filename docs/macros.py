@@ -54,37 +54,47 @@ def define_env(env):
         except:
             pass
         
-        # Final fallback
-        return "1.0.1"
+        # Final fallback - use a generic placeholder instead of old version
+        return "latest"
     
     @env.macro
     def pip_install_cmd(package_name="ssh-tools-suite"):
         """Generate pip install command with latest version."""
         version = pypi_version(package_name)
+        if version == "latest" or not version:
+            return f"pip install {package_name}"
         return f"pip install {package_name}=={version}"
     
     @env.macro
     def pip_install_dev():
         """Generate pip install command with dev dependencies."""
         version = pypi_version()
+        if version == "latest" or not version:
+            return "pip install ssh-tools-suite[dev]"
         return f"pip install ssh-tools-suite[dev]=={version}"
     
     @env.macro
     def pip_install_docs():
         """Generate pip install command with docs dependencies."""
         version = pypi_version()
+        if version == "latest" or not version:
+            return "pip install ssh-tools-suite[docs]"
         return f"pip install ssh-tools-suite[docs]=={version}"
     
     @env.macro
     def pip_install_all():
         """Generate pip install command with all dependencies."""
         version = pypi_version()
+        if version == "latest" or not version:
+            return "pip install ssh-tools-suite[dev,docs]"
         return f"pip install ssh-tools-suite[dev,docs]=={version}"
     
     @env.macro
     def download_filename(base_name="SSH-Tunnel-Manager"):
         """Generate download filename with current version."""
         version = pypi_version()
+        if version == "latest" or not version:
+            return f"{base_name}-latest-Windows.zip"
         return f"{base_name}-v{version}-Windows.zip"
     
     @env.macro

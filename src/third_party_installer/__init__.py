@@ -9,7 +9,7 @@ This package handles installation of third-party tools required by the SSH Tools
 - PX (Corporate Proxy Tool)
 """
 
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 __author__ = "SSH Tools Team"
 
 from .core.installer import ThirdPartyInstaller

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ssh-tools-suite"
-version = "1.0.0"
+version = "1.0.2"
 authors = [
     {name = "Nicholas Kozma", email = "Nicholas.Kozma@us.bosch.com"},
 ]

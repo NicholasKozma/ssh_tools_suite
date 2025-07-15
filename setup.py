@@ -18,7 +18,7 @@ if requirements_file.exists():
 
 setup(
     name="ssh-tools-suite",
-    version="1.0.1",
+    version="1.0.2",
     author="Nicholas Kozma",
     author_email="Nicholas.Kozma@us.bosch.com",
     description="SSH Tunnel Manager - Comprehensive SSH tunnel management application",
