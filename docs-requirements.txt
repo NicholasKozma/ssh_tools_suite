@@ -6,3 +6,5 @@ pymdown-extensions>=10.0.0
 mkdocs-gen-files
 mkdocs-literate-nav
 mkdocs-section-index
+mkdocs-macros-plugin>=1.0.0
+requests>=2.28.0

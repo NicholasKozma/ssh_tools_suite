@@ -13,12 +13,12 @@ Welcome to the SSH Tools Suite documentation! This comprehensive toolkit provide
 ### Option 1: Standalone Executables (No Python Required)
 Download pre-built executables from [**GitHub Releases**](https://github.com/NicholasKozma/ssh_tools_suite/releases):
 
-- **Windows**: `SSH-Tunnel-Manager-v*.*.*.zip` - Fast startup, no dependencies
+- **Windows**: `SSH-Tunnel-Manager-v{{ pypi_version() }}.zip` - Fast startup, no dependencies
 - **Benefits**: ⚡ 2-3 second startup, 🚀 portable, 🔒 all dependencies included
 
 ### Option 2: PyPI Installation (For Python Users)
 ```bash
-pip install ssh-tools-suite
+{{ pip_install_cmd() }}
 ```
 
 ### Option 3: From Source (For Developers)

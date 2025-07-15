@@ -1,0 +1,92 @@
+name: Update Documentation
+
+on:
+  release:
+    types: [published]
+  schedule:
+    # Run daily at 2 AM UTC to check for version updates
+    - cron: '0 2 * * *'
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  update-docs:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests
+        
+    - name: Get latest PyPI version
+      id: pypi_version
+      run: |
+        LATEST_VERSION=$(python -c "
+        import requests
+        import json
+        
+        response = requests.get('https://pypi.org/pypi/ssh-tools-suite/json')
+        data = response.json()
+        latest_version = data['info']['version']
+        print(latest_version)
+        ")
+        
+        echo "VERSION=$LATEST_VERSION" >> $GITHUB_OUTPUT
+        echo "Latest PyPI version: $LATEST_VERSION"
+        
+    - name: Update documentation with latest version
+      run: |
+        VERSION=${{ steps.pypi_version.outputs.VERSION }}
+        echo "Updating docs to version: $VERSION"
+        
+        # Update main docs page
+        sed -i "s/pip install ssh-tools-suite.*/pip install ssh-tools-suite==$VERSION/" docs/index.md
+        
+        # Update installation guide
+        sed -i "s/pip install ssh-tools-suite.*/pip install ssh-tools-suite==$VERSION/" docs/getting-started/installation.md
+        
+        # Update download links to point to latest release
+        sed -i "s/SSH-Tunnel-Manager-v\*\.\*\.\*/SSH-Tunnel-Manager-v$VERSION/" docs/getting-started/installation.md
+        sed -i "s/SSH-Tools-Installer-v\*\.\*\.\*/SSH-Tools-Installer-v$VERSION/" docs/getting-started/installation.md
+        
+        # Update version references in quick start
+        if [ -f "docs/getting-started/quick-start.md" ]; then
+          sed -i "s/pip install ssh-tools-suite.*/pip install ssh-tools-suite==$VERSION/" docs/getting-started/quick-start.md
+        fi
+        
+    - name: Check for changes
+      id: git_status
+      run: |
+        if git diff --quiet; then
+          echo "HAS_CHANGES=false" >> $GITHUB_OUTPUT
+          echo "No changes detected"
+        else
+          echo "HAS_CHANGES=true" >> $GITHUB_OUTPUT
+          echo "Changes detected"
+          git diff --name-only
+        fi
+        
+    - name: Commit and push changes
+      if: steps.git_status.outputs.HAS_CHANGES == 'true'
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add -A
+        git commit -m "📚 Update documentation to version ${{ steps.pypi_version.outputs.VERSION }}"
+        git push
+        
+    - name: Deploy documentation
+      if: steps.git_status.outputs.HAS_CHANGES == 'true'
+      run: |
+        pip install mkdocs mkdocs-material mkdocstrings[python] mkdocs-gen-files mkdocs-literate-nav mkdocs-section-index
+        mkdocs gh-deploy --force
