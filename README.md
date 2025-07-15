@@ -1,45 +1,6 @@
 # SSH Tools Suite
 
-[![Python Version](https://img.shields.io/badge/python-3### Basic Usage
-
-#### Running Standalone Executables
-
-**Windows:**
-```bash
-# Extract the ZIP file and run directly
-SSH-Tunnel-Manager.exe  # For GUI mode
-SSH-Tools-Installer.exe # For installer GUI
-```
-
-**From Command Line (Windows):**
-```cmd
-# Navigate to extracted folder
-cd SSH-Tunnel-Manager
-SSH-Tunnel-Manager.exe --help  # Show command line options
-
-cd SSH-Tools-Installer  
-SSH-Tools-Installer.exe --help  # Show installer options
-```
-
-#### Running from PyPI Installation
-
-**GUI Mode (Recommended):**
-```bash
-# Start SSH Tunnel Manager GUI
-ssh-tunnel-manager-gui
-
-# Start Third-Party Installer GUI  
-ssh-tools-installer-gui
-```
-
-**Command Line Mode:**
-```bash
-# SSH Tunnel Manager CLI
-ssh-tunnel-manager --help
-
-# Third-Party Installer CLI
-ssh-tools-installer --help
-```s://python.org)
+[![Python Version](https://img.shields.io/badge/python-3.9+-blue.svg)](https://python.org)
 [![PyPI version](https://img.shields.io/pypi/v/ssh-tools-suite.svg)](https://pypi.org/project/ssh-tools-suite/)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/ssh-tools-suite)](https://pypi.org/project/ssh-tools-suite/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
@@ -98,6 +59,25 @@ For users who prefer not to install Python or want a portable solution, download
 - ✅ Portable - run from any folder
 - ✅ All dependencies included
 - ✅ Perfect for end users and system administrators
+
+#### Running Standalone Executables
+
+**Windows:**
+```bash
+# Extract the ZIP file and run directly
+SSH-Tunnel-Manager.exe  # For GUI mode
+SSH-Tools-Installer.exe # For installer GUI
+```
+
+**From Command Line (Windows):**
+```cmd
+# Navigate to extracted folder
+cd SSH-Tunnel-Manager
+SSH-Tunnel-Manager.exe --help  # Show command line options
+
+cd SSH-Tools-Installer  
+SSH-Tools-Installer.exe --help  # Show installer options
+```
 
 #### Option 3: From Source
 ```bash
