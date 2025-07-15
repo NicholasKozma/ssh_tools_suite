@@ -872,7 +872,7 @@ jobs:
           C:\Program Files\PsTools
           C:\Program Files\VideoLAN
           C:\ffmpeg
-        key: ssh-tools-dependencies-${{ runner.os }}-${{ hashFiles('**/requirements.txt') }}
+        key: ssh-tools-dependencies-${% raw %}{{ runner.os }}{% endraw %}-${% raw %}{{ hashFiles('**/requirements.txt') }}{% endraw %}
 ```
 
 ### Docker Integration

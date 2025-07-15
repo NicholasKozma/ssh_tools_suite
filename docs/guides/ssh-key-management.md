@@ -267,7 +267,7 @@ chmod 644 ~/.ssh/config
 - name: Setup SSH Key
   uses: webfactory/ssh-agent@v0.5.3
   with:
-    ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+    ssh-private-key: ${% raw %}{{ secrets.SSH_PRIVATE_KEY }}{% endraw %}
 
 - name: Deploy via SSH Tunnel
   run: |
