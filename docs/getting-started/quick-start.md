@@ -2,10 +2,18 @@
 
 Get up and running with SSH Tools Suite in just a few minutes!
 
-## Installation
+## Installation Options
+
+### Option 1: Standalone Executable (Fastest)
+
+1. **Download**: Go to [GitHub Releases](https://github.com/NicholasKozma/ssh_tools_suite/releases)
+2. **Extract**: Download and extract `SSH-Tunnel-Manager-v*.*.*.zip`
+3. **Run**: Double-click `SSH-Tunnel-Manager.exe`
+
+### Option 2: PyPI Installation
 
 ```bash
-# Install from PyPI (recommended)
+# Install from PyPI (recommended for Python users)
 pip install ssh-tools-suite
 
 # Verify installation
@@ -14,9 +22,19 @@ ssh-tunnel-manager --version
 
 ## Launch the Application
 
-After installation, you can start the SSH Tunnel Manager in several ways:
+### Using Standalone Executable
 
-### GUI Application
+```cmd
+# Windows: Navigate to extracted folder and run
+SSH-Tunnel-Manager.exe
+
+# Or from command line with options
+SSH-Tunnel-Manager.exe --help
+```
+
+### Using PyPI Installation
+
+**GUI Application:**
 ```bash
 # Method 1: Using the installed script
 ssh-tunnel-manager-gui
@@ -28,7 +46,7 @@ python -m ssh_tunnel_manager.gui
 python ssh_tunnel_manager_app.py
 ```
 
-### Command Line Interface
+**Command Line Interface:**
 ```bash
 # View available commands
 ssh-tunnel-manager --help

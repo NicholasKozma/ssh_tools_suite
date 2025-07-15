@@ -82,6 +82,7 @@ nav:
   - Home: index.md
   - Getting Started:
     - Installation: getting-started/installation.md
+    - Standalone Executables: getting-started/executable-installation.md
     - Quick Start: getting-started/quick-start.md
     - Configuration: getting-started/configuration.md
   - SSH Tunnel Manager:
