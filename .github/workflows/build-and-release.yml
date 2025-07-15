@@ -45,16 +45,11 @@ jobs:
         pyinstaller --onedir --windowed --name="SSH-Tools-Installer" --hidden-import=tkinter --hidden-import=subprocess --hidden-import=threading --hidden-import=json --hidden-import=logging --clean third_party_installer_app.py
         
     - name: Create ZIP archives
-      shell: bash
+      shell: pwsh
       run: |
-        VERSION=${{ steps.get_version.outputs.VERSION }}
-        cd dist
-        
-        # Create ZIP for SSH Tunnel Manager
-        powershell Compress-Archive -Path "SSH-Tunnel-Manager" -DestinationPath "SSH-Tunnel-Manager-v$VERSION-Windows.zip"
-        
-        # Create ZIP for SSH Tools Installer
-        powershell Compress-Archive -Path "SSH-Tools-Installer" -DestinationPath "SSH-Tools-Installer-v$VERSION-Windows.zip"
+        $version = "${{ steps.get_version.outputs.VERSION }}"
+        Compress-Archive -Path "dist/SSH-Tunnel-Manager" -DestinationPath "dist/SSH-Tunnel-Manager-v$version-Windows.zip"
+        Compress-Archive -Path "dist/SSH-Tools-Installer" -DestinationPath "dist/SSH-Tools-Installer-v$version-Windows.zip"
         
     - name: Upload executables to release
       uses: softprops/action-gh-release@v1
