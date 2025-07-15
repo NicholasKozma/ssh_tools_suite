@@ -52,7 +52,7 @@ jobs:
 
       - name: Build with MkDocs
         run: |
-          mkdocs build --clean --strict
+          PYTHONPATH=src mkdocs build --clean --strict
         env:
           # Override the site_url for GitHub Pages
           SITE_URL: ${{ steps.pages.outputs.base_url }}
