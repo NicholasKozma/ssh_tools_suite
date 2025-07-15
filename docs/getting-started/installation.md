@@ -1,6 +1,17 @@
 # Installation Guide
 
+[![PyPI version](https://badge.fury.io/py/ssh-tools-suite.svg)](https://badge.fury.io/py/ssh-tools-suite)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/ssh-tools-suite)](https://pypi.org/project/ssh-tools-suite/)
+
 This guide will help you install and set up the SSH Tools Suite on your system.
+
+## Quick Installation
+
+The easiest way to install SSH Tools Suite is via PyPI:
+
+```bash
+pip install ssh-tools-suite
+```
 
 ## System Requirements
 
@@ -18,17 +29,34 @@ This guide will help you install and set up the SSH Tools Suite on your system.
 
 ## Installation Methods
 
-### Method 1: Install from PyPI (Recommended)
+### Method 1: PyPI Installation (Recommended)
 
+#### Basic Installation
 ```bash
-# Install the main package
+# Install the latest stable version
 pip install ssh-tools-suite
 
-# Install with development dependencies
+# Verify installation
+ssh-tunnel-manager --version
+ssh-tools-installer --version
+```
+
+#### With Optional Dependencies
+```bash
+# Install with development tools
 pip install ssh-tools-suite[dev]
 
 # Install with documentation tools
 pip install ssh-tools-suite[docs]
+
+# Install with all optional dependencies
+pip install ssh-tools-suite[dev,docs]
+```
+
+#### Upgrade to Latest Version
+```bash
+# Upgrade to the latest version
+pip install --upgrade ssh-tools-suite
 ```
 
 ### Method 2: Install from Source

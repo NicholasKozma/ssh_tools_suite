@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ssh-tools-suite"
-version = "2.1.0"
+version = "1.0.0"
 authors = [
     {name = "Nicholas Kozma", email = "Nicholas.Kozma@us.bosch.com"},
 ]
@@ -70,6 +70,7 @@ Homepage = "https://github.com/NicholasKozma/ssh_tools_suite"
 Documentation = "https://nicholaskozma.github.io/ssh_tools_suite/"
 Repository = "https://github.com/NicholasKozma/ssh_tools_suite.git"
 "Bug Reports" = "https://github.com/NicholasKozma/ssh_tools_suite/issues"
+"PyPI" = "https://pypi.org/project/ssh-tools-suite/"
 Changelog = "https://github.com/NicholasKozma/ssh_tools_suite/blob/main/CHANGELOG.md"
 
 [project.scripts]

@@ -18,7 +18,7 @@ if requirements_file.exists():
 
 setup(
     name="ssh-tunnel-manager",
-    version="2.1.0",
+    version="1.0.0",
     author="Nicholas Kozma",
     author_email="Nicholas.Kozma@us.bosch.com",
     description="SSH Tunnel Manager - Comprehensive SSH tunnel management application",

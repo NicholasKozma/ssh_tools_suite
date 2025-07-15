@@ -1,6 +1,8 @@
 # SSH Tools Suite
 
-[![Python Version](https://img.shields.io/badge/python-3.8+-blue.svg)](https://python.org)
+[![Python Version](https://img.shields.io/badge/python-3.9+-blue.svg)](https://python.org)
+[![PyPI version](https://badge.fury.io/py/ssh-tools-suite.svg)](https://badge.fury.io/py/ssh-tools-suite)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/ssh-tools-suite)](https://pypi.org/project/ssh-tools-suite/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg)](https://github.com/NicholasKozma/ssh_tools_suite)
 [![Documentation](https://img.shields.io/badge/docs-MkDocs-blue.svg)](https://nicholaskozma.github.io/ssh_tools_suite/)
@@ -37,14 +39,25 @@ SSH Tools Suite is a comprehensive toolkit for managing SSH tunnels, streaming R
 
 ### Installation
 
+#### From PyPI (Recommended)
 ```bash
-# Install with pip
+# Install the latest stable version from PyPI
 pip install ssh-tools-suite
+```
 
-# Or install from source
+#### From Source
+```bash
+# Install from GitHub source
 git clone https://github.com/NicholasKozma/ssh_tools_suite.git
 cd ssh_tools_suite
 pip install -e .
+```
+
+### Verify Installation
+```bash
+# Check if installation was successful
+ssh-tunnel-manager --version
+ssh-tools-installer --version
 ```
 
 ### Basic Usage
