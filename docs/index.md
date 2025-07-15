@@ -6,7 +6,9 @@
 [![Python Version](https://img.shields.io/badge/python-3.9+-blue.svg)](https://python.org)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/NicholasKozma/ssh_tools_suite/blob/main/LICENSE)
 
-Welcome to the SSH Tools Suite documentation! This comprehensive toolkit provides powerful SSH tunnel management capabilities and third-party software installation utilities.
+Welcome to the SSH Tools Suite documentation! This comprehensive toolkit provides powerful SSH tunnel management capabilities and third-party software installation utilities. 
+
+🚀 **Latest Version**: {{ pypi_version() }} - Always up-to-date with automatic versioning!
 
 ## Installation Options
 
