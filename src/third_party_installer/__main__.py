@@ -17,7 +17,7 @@ def main():
         # Set application properties
         app.setApplicationName("Third Party Installer")
         app.setApplicationDisplayName("SSH Tools Suite - Third Party Installer")
-        app.setApplicationVersion("1.0.0")
+        app.setApplicationVersion("1.0.1")
         
         # Create and show the installer window
         installer = ThirdPartyInstallerGUI()

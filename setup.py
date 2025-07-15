@@ -17,8 +17,8 @@ if requirements_file.exists():
     requirements = requirements_file.read_text(encoding="utf-8").strip().split("\n")
 
 setup(
-    name="ssh-tunnel-manager",
-    version="1.0.0",
+    name="ssh-tools-suite",
+    version="1.0.1",
     author="Nicholas Kozma",
     author_email="Nicholas.Kozma@us.bosch.com",
     description="SSH Tunnel Manager - Comprehensive SSH tunnel management application",

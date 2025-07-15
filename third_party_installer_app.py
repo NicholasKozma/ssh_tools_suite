@@ -43,7 +43,7 @@ def main():
     
     # Set application properties
     app.setApplicationName("Third Party Installer")
-    app.setApplicationVersion("1.0.0")
+    app.setApplicationVersion("1.0.1")
     app.setOrganizationName("SSH Tools")
     app.setApplicationDisplayName("SSH Tools - Third Party Installer")
     
