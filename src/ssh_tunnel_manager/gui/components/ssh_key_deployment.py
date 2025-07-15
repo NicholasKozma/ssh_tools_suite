@@ -7,6 +7,8 @@ Automatic deployment of SSH public keys to remote servers
 import os
 import subprocess
 import tempfile
+import base64
+import shlex
 from pathlib import Path
 from typing import Optional, Tuple
 
@@ -38,6 +40,11 @@ class SSHKeyDeployWorker(QThread):
     def run(self):
         """Deploy SSH key to remote server."""
         try:
+            # Validate public key content first
+            if not self._validate_public_key(self.public_key_content):
+                self.deployment_result.emit(False, "Invalid public key format or potentially dangerous content")
+                return
+            
             self.progress_update.emit("Connecting to server...")
             
             # Method 1: Try using ssh-copy-id if available (Linux/macOS)
@@ -58,6 +65,80 @@ class SSHKeyDeployWorker(QThread):
         except Exception as e:
             self.deployment_result.emit(False, f"Deployment failed: {str(e)}")
     
+    def _validate_public_key(self, key_content: str) -> bool:
+        """
+        Validate that the public key content is properly formatted and safe.
+        
+        This method implements multiple layers of validation to prevent
+        command injection attacks and ensure only valid SSH keys are processed.
+        
+        Returns:
+            bool: True if key is valid and safe, False otherwise
+        """
+        if not key_content or not key_content.strip():
+            return False
+        
+        # Remove any leading/trailing whitespace
+        key_content = key_content.strip()
+        
+        # SSH public keys should start with a valid key type
+        valid_key_types = [
+            'ssh-rsa', 'ssh-ed25519', 'ssh-ecdsa', 'ssh-dss', 
+            'ecdsa-sha2-nistp256', 'ecdsa-sha2-nistp384', 'ecdsa-sha2-nistp521'
+        ]
+        
+        # Check if key starts with a valid type
+        if not any(key_content.startswith(key_type) for key_type in valid_key_types):
+            return False
+        
+        # Check for potential command injection characters and sequences
+        dangerous_chars = [';', '&&', '||', '|', '`', '$', '(', ')', '{', '}', '<', '>', '\n', '\r', '\t']
+        dangerous_sequences = ['$(', '${', '`', '\\n', '\\r', '\\t']
+        
+        # Check for dangerous characters
+        if any(char in key_content for char in dangerous_chars):
+            return False
+            
+        # Check for dangerous sequences
+        if any(seq in key_content for seq in dangerous_sequences):
+            return False
+        
+        # Basic format validation - should have at least 2 parts (type, key_data)
+        parts = key_content.split()
+        if len(parts) < 2:
+            return False
+        
+        # Validate that we have exactly the expected format
+        if len(parts) > 3:  # type, key_data, optional_comment
+            return False
+        
+        # Validate base64 key data (second part)
+        try:
+            key_data = parts[1]
+            # SSH key data should be valid base64 and reasonably long
+            if len(key_data) < 50:  # Minimum reasonable key length
+                return False
+            # Try to decode the key data to ensure it's valid base64
+            decoded = base64.b64decode(key_data, validate=True)
+            # Decoded key should be at least 32 bytes for security
+            if len(decoded) < 32:
+                return False
+        except Exception:
+            return False
+        
+        # If there's a comment (third part), validate it
+        if len(parts) == 3:
+            comment = parts[2]
+            # Comments should not contain dangerous characters
+            if any(char in comment for char in [';', '&', '|', '`', '$', '\n', '\r']):
+                return False
+        
+        # Additional validation: key shouldn't be suspiciously long
+        if len(key_content) > 8192:  # Reasonable maximum for SSH keys
+            return False
+        
+        return True
+
     def _try_ssh_copy_id(self) -> bool:
         """Try using ssh-copy-id command."""
         try:
@@ -70,7 +151,9 @@ class SSHKeyDeployWorker(QThread):
             
             # Create temporary script for password input
             with tempfile.NamedTemporaryFile(mode='w', suffix='.sh', delete=False) as f:
-                f.write(f'#!/bin/bash\necho "{self.password}"\n')
+                # Safely escape the password to prevent injection
+                escaped_password = shlex.quote(self.password)
+                f.write(f'#!/bin/bash\necho {escaped_password}\n')
                 script_path = f.name
             
             os.chmod(script_path, 0o700)
@@ -110,88 +193,193 @@ class SSHKeyDeployWorker(QThread):
             return False
     
     def _try_sshpass_method(self) -> bool:
-        """Try using sshpass + ssh method."""
+        """
+        Try using sshpass + ssh method with enhanced security.
+        
+        This method safely deploys SSH keys using sshpass while preventing
+        command injection through proper input validation and escaping.
+        """
         try:
             self.progress_update.emit("Trying sshpass method...")
             
             # Check if sshpass is available
-            result = subprocess.run(['which', 'sshpass'], capture_output=True)
+            result = subprocess.run(['which', 'sshpass'], capture_output=True, timeout=10)
             if result.returncode != 0:
+                self.progress_update.emit("sshpass not available")
                 return False
             
-            # Create commands to deploy the key
-            commands = [
+            # Double-check key validation (defense in depth)
+            if not self._validate_public_key(self.public_key_content):
+                self.progress_update.emit("Key validation failed in sshpass method")
+                return False
+            
+            # Safely escape the public key content to prevent command injection
+            escaped_key = shlex.quote(self.public_key_content.strip())
+            
+            # Build individual commands with proper escaping
+            # Use individual commands instead of chaining for better error handling
+            setup_commands = [
                 "mkdir -p ~/.ssh",
-                "chmod 700 ~/.ssh",
-                f"echo '{self.public_key_content}' >> ~/.ssh/authorized_keys",
+                "chmod 700 ~/.ssh"
+            ]
+            
+            deploy_command = f"echo {escaped_key} >> ~/.ssh/authorized_keys"
+            cleanup_commands = [
                 "chmod 600 ~/.ssh/authorized_keys",
                 "sort ~/.ssh/authorized_keys | uniq > ~/.ssh/authorized_keys.tmp",
                 "mv ~/.ssh/authorized_keys.tmp ~/.ssh/authorized_keys"
             ]
             
-            command_string = " && ".join(commands)
+            # Execute commands in sequence for better error tracking
+            all_commands = setup_commands + [deploy_command] + cleanup_commands
             
-            # Execute via sshpass + ssh
-            cmd = [
-                'sshpass', '-p', self.password,
-                'ssh',
-                '-p', str(self.port),
-                '-o', 'StrictHostKeyChecking=no',
-                '-o', 'UserKnownHostsFile=/dev/null',
-                f"{self.username}@{self.host}",
-                command_string
-            ]
-            
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
-            
-            if result.returncode == 0:
-                self.deployment_result.emit(True, "SSH key deployed successfully using sshpass!")
-                return True
-            else:
-                self.progress_update.emit(f"sshpass method failed: {result.stderr}")
-                return False
+            for i, cmd in enumerate(all_commands):
+                self.progress_update.emit(f"Executing step {i+1}/{len(all_commands)}")
                 
+                # Execute via sshpass + ssh
+                ssh_cmd = [
+                    'sshpass', '-p', self.password,
+                    'ssh',
+                    '-p', str(self.port),
+                    '-o', 'ConnectTimeout=30',
+                    '-o', 'StrictHostKeyChecking=no',
+                    '-o', 'UserKnownHostsFile=/dev/null',
+                    '-o', 'BatchMode=no',
+                    f"{self.username}@{self.host}",
+                    cmd
+                ]
+                
+                result = subprocess.run(ssh_cmd, capture_output=True, text=True, timeout=60)
+                
+                if result.returncode != 0:
+                    error_msg = result.stderr.strip() if result.stderr else "Unknown error"
+                    self.progress_update.emit(f"Command failed: {cmd}")
+                    self.progress_update.emit(f"Error: {error_msg}")
+                    return False
+            
+            self.deployment_result.emit(True, "SSH key deployed successfully using sshpass!")
+            return True
+                
+        except subprocess.TimeoutExpired:
+            self.progress_update.emit("sshpass method timed out")
+            return False
         except Exception as e:
-            self.progress_update.emit(f"sshpass method failed: {str(e)}")
+            # Sanitize error message to avoid information disclosure
+            safe_error = str(e).replace(self.password, '[PASSWORD]')
+            self.progress_update.emit(f"sshpass method failed: {safe_error}")
             return False
     
     def _try_paramiko_method(self) -> bool:
-        """Try using paramiko library for deployment."""
+        """
+        Try using paramiko library for secure deployment.
+        
+        This method uses SFTP for direct file operations instead of shell commands,
+        providing the most secure deployment method available.
+        """
         try:
             import paramiko
             
             self.progress_update.emit("Trying paramiko method...")
             
-            # Create SSH client
+            # Double-check key validation (defense in depth)
+            if not self._validate_public_key(self.public_key_content):
+                self.progress_update.emit("Key validation failed in paramiko method")
+                return False
+            
+            # Create SSH client with security settings
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             
-            # Connect to server
+            # Connect to server with timeout
+            self.progress_update.emit("Connecting via paramiko...")
             ssh.connect(
                 hostname=self.host,
                 port=self.port,
                 username=self.username,
                 password=self.password,
-                timeout=30
+                timeout=30,
+                auth_timeout=30,
+                banner_timeout=30
             )
             
-            # Execute commands to deploy key
-            commands = [
-                "mkdir -p ~/.ssh",
-                "chmod 700 ~/.ssh",
-                f"echo '{self.public_key_content}' >> ~/.ssh/authorized_keys",
-                "chmod 600 ~/.ssh/authorized_keys",
-                "sort ~/.ssh/authorized_keys | uniq > ~/.ssh/authorized_keys.tmp",
-                "mv ~/.ssh/authorized_keys.tmp ~/.ssh/authorized_keys"
-            ]
+            # Use SFTP for secure file operations instead of shell commands
+            self.progress_update.emit("Opening SFTP connection...")
+            sftp = ssh.open_sftp()
             
-            for cmd in commands:
-                stdin, stdout, stderr = ssh.exec_command(cmd)
-                exit_code = stdout.channel.recv_exit_status()
-                if exit_code != 0:
-                    error_msg = stderr.read().decode()
-                    raise Exception(f"Command failed: {cmd}\nError: {error_msg}")
+            # Ensure .ssh directory exists with proper permissions
+            ssh_dir = '.ssh'
+            try:
+                # Try to create directory
+                sftp.mkdir(ssh_dir)
+                self.progress_update.emit("Created .ssh directory")
+            except IOError:
+                # Directory already exists, which is fine
+                self.progress_update.emit(".ssh directory already exists")
             
+            # Set directory permissions (equivalent to chmod 700)
+            try:
+                sftp.chmod(ssh_dir, 0o700)
+                self.progress_update.emit("Set .ssh directory permissions")
+            except Exception as e:
+                self.progress_update.emit(f"Warning: Could not set directory permissions: {e}")
+            
+            # Handle authorized_keys file
+            authorized_keys_path = '.ssh/authorized_keys'
+            existing_keys = []
+            
+            self.progress_update.emit("Reading existing authorized_keys...")
+            try:
+                with sftp.open(authorized_keys_path, 'r') as f:
+                    existing_keys = [line.strip() for line in f.readlines() if line.strip()]
+                self.progress_update.emit(f"Found {len(existing_keys)} existing keys")
+            except IOError:
+                # File doesn't exist yet, which is fine
+                self.progress_update.emit("No existing authorized_keys file")
+            
+            # Prepare new key
+            new_key = self.public_key_content.strip()
+            
+            # Check for duplicates (avoid adding the same key multiple times)
+            if new_key in existing_keys:
+                self.progress_update.emit("Key already exists in authorized_keys")
+                self.deployment_result.emit(True, "SSH key already deployed (found existing entry)")
+                sftp.close()
+                ssh.close()
+                return True
+            
+            # Add new key to the list
+            existing_keys.append(new_key)
+            
+            # Write back all keys atomically
+            self.progress_update.emit("Writing updated authorized_keys...")
+            temp_file = authorized_keys_path + '.tmp'
+            
+            try:
+                with sftp.open(temp_file, 'w') as f:
+                    for key in existing_keys:
+                        f.write(key + '\n')
+                
+                # Atomic move
+                sftp.rename(temp_file, authorized_keys_path)
+                self.progress_update.emit("Atomically updated authorized_keys")
+                
+            except Exception as e:
+                # Clean up temp file if it exists
+                try:
+                    sftp.remove(temp_file)
+                except:
+                    pass
+                raise e
+            
+            # Set file permissions (equivalent to chmod 600)
+            try:
+                sftp.chmod(authorized_keys_path, 0o600)
+                self.progress_update.emit("Set authorized_keys permissions")
+            except Exception as e:
+                self.progress_update.emit(f"Warning: Could not set file permissions: {e}")
+            
+            # Clean up connections
+            sftp.close()
             ssh.close()
             
             self.deployment_result.emit(True, "SSH key deployed successfully using paramiko!")
@@ -200,29 +388,68 @@ class SSHKeyDeployWorker(QThread):
         except ImportError:
             self.progress_update.emit("paramiko library not available")
             return False
+        except paramiko.AuthenticationException:
+            self.progress_update.emit("Authentication failed - check username/password")
+            return False
+        except paramiko.SSHException as e:
+            self.progress_update.emit(f"SSH connection error: {str(e)}")
+            return False
         except Exception as e:
-            self.progress_update.emit(f"paramiko method failed: {str(e)}")
+            # Sanitize error message to avoid password disclosure
+            safe_error = str(e).replace(self.password, '[PASSWORD]')
+            self.progress_update.emit(f"paramiko method failed: {safe_error}")
             return False
     
     def _provide_manual_instructions(self):
-        """Provide manual deployment instructions."""
+        """
+        Provide safe manual deployment instructions.
+        
+        These instructions guide users through secure manual deployment
+        while avoiding potential security issues in the automated methods.
+        """
+        # Validate the key before providing instructions
+        if not self._validate_public_key(self.public_key_content):
+            self.deployment_result.emit(False, 
+                "Cannot provide manual instructions: SSH key validation failed. "
+                "Please verify your public key is properly formatted and contains no dangerous characters.")
+            return
+        
+        # Create safe instructions using proper shell quoting
+        escaped_key = shlex.quote(self.public_key_content.strip())
+        
         instructions = f"""
 Manual SSH Key Deployment Instructions:
+
+⚠️  SECURITY NOTE: Follow these steps carefully to avoid command injection risks.
 
 1. Connect to your server using SSH:
    ssh -p {self.port} {self.username}@{self.host}
 
-2. Create the .ssh directory (if it doesn't exist):
+2. Create the .ssh directory with proper permissions:
    mkdir -p ~/.ssh
    chmod 700 ~/.ssh
 
-3. Add your public key to authorized_keys:
-   echo '{self.public_key_content}' >> ~/.ssh/authorized_keys
+3. Add your public key to authorized_keys (COPY the entire command):
+   echo {escaped_key} >> ~/.ssh/authorized_keys
+
+4. Set proper file permissions:
    chmod 600 ~/.ssh/authorized_keys
 
-4. Remove any duplicate entries:
+5. Remove any duplicate entries (optional but recommended):
    sort ~/.ssh/authorized_keys | uniq > ~/.ssh/authorized_keys.tmp
    mv ~/.ssh/authorized_keys.tmp ~/.ssh/authorized_keys
+
+6. Verify the key was added correctly:
+   tail -1 ~/.ssh/authorized_keys
+
+7. Test the key authentication (from your local machine):
+   ssh -p {self.port} -i /path/to/your/private/key {self.username}@{self.host}
+
+🔒 SECURITY TIPS:
+- Always verify the echo command before running it
+- Never manually type the key - copy/paste the entire command
+- Verify file permissions: ~/.ssh should be 700, authorized_keys should be 600
+- Test the new key before disconnecting your current session
 
 After completing these steps, you should be able to connect using your SSH key.
 """
