@@ -73,8 +73,8 @@ This project includes third-party software components that are subject to their 
 | requests                   | 2.32.4      | Apache Software License                             |
 | shiboken6                  | 6.9.1       | LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only       |
 | six                        | 1.17.0      | MIT License                                         |
-| ssh-tools-suite            | 2.1.0       | MIT License                                         |
-| ssh-tools-suite            | 2.1.0       | MIT License                                         |
+| ssh-tools-suite            | 1.0.0       | MIT License                                         |
+| ssh-tools-suite            | 1.0.0       | MIT License                                         |
 | typing_extensions          | 4.14.1      | UNKNOWN                                             |
 | urllib3                    | 2.5.0       | UNKNOWN                                             |
 | virtualenv                 | 20.31.2     | MIT License                                         |

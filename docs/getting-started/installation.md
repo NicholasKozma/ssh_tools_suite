@@ -1,6 +1,6 @@
 # Installation Guide
 
-[![PyPI version](https://badge.fury.io/py/ssh-tools-suite.svg)](https://badge.fury.io/py/ssh-tools-suite)
+[![PyPI version](https://img.shields.io/pypi/v/ssh-tools-suite.svg)](https://pypi.org/project/ssh-tools-suite/)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/ssh-tools-suite)](https://pypi.org/project/ssh-tools-suite/)
 
 This guide will help you install and set up the SSH Tools Suite on your system.

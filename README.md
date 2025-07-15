@@ -1,7 +1,7 @@
 # SSH Tools Suite
 
 [![Python Version](https://img.shields.io/badge/python-3.9+-blue.svg)](https://python.org)
-[![PyPI version](https://badge.fury.io/py/ssh-tools-suite.svg)](https://badge.fury.io/py/ssh-tools-suite)
+[![PyPI version](https://img.shields.io/pypi/v/ssh-tools-suite.svg)](https://pypi.org/project/ssh-tools-suite/)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/ssh-tools-suite)](https://pypi.org/project/ssh-tools-suite/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg)](https://github.com/NicholasKozma/ssh_tools_suite)
@@ -258,7 +258,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Homepage**: [https://ssh-tools-suite.github.io/](https://ssh-tools-suite.github.io/)
 - **Documentation**: [https://nicholaskozma.github.io/ssh_tools_suite/](https://nicholaskozma.github.io/ssh_tools_suite/)
 - **PyPI**: [https://pypi.org/project/ssh-tools-suite/](https://pypi.org/project/ssh-tools-suite/)
-- **Docker Hub**: [https://hub.docker.com/r/sshtools/ssh-tools-suite](https://hub.docker.com/r/sshtools/ssh-tools-suite)
 
 ---
 

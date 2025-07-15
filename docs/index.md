@@ -1,6 +1,6 @@
 # SSH Tools Suite Documentation
 
-[![PyPI version](https://badge.fury.io/py/ssh-tools-suite.svg)](https://badge.fury.io/py/ssh-tools-suite)
+[![PyPI version](https://img.shields.io/pypi/v/ssh-tools-suite.svg)](https://pypi.org/project/ssh-tools-suite/)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/ssh-tools-suite)](https://pypi.org/project/ssh-tools-suite/)
 [![Python Version](https://img.shields.io/badge/python-3.9+-blue.svg)](https://python.org)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/NicholasKozma/ssh_tools_suite/blob/main/LICENSE)
