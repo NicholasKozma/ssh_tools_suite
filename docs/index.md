@@ -1,10 +1,11 @@
 # SSH Tools Suite Documentation
 
-[![PyPI version](https://badge.fury.io/py/ssh-tools-suite.svg)](https://badge.fury.io/py/ssh-tools-suite)
-[![PyPI - Downloads](https://img.shields.io/pypi/dm/ssh-tools-suite)](https://pypi.org/project/ssh-tools-suite/)
-[![GitHub Release](https://img.shields.io/github/v/release/NicholasKozma/ssh_tools_suite)](https://github.com/NicholasKozma/ssh_tools_suite/releases)
 [![Python Version](https://img.shields.io/badge/python-3.9+-blue.svg)](https://python.org)
+[![PyPI version](https://img.shields.io/pypi/v/ssh-tools-suite.svg)](https://pypi.org/project/ssh-tools-suite/)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/ssh-tools-suite)](https://pypi.org/project/ssh-tools-suite/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/NicholasKozma/ssh_tools_suite/blob/main/LICENSE)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg)](https://github.com/NicholasKozma/ssh_tools_suite)
+[![Documentation](https://img.shields.io/badge/docs-MkDocs-blue.svg)](https://nicholaskozma.github.io/ssh_tools_suite/)
 
 Welcome to the SSH Tools Suite documentation! This comprehensive toolkit provides powerful SSH tunnel management capabilities and third-party software installation utilities. 
 

@@ -64,6 +64,30 @@ def define_env(env):
         return f"pip install {package_name}=={version}"
     
     @env.macro
+    def pip_install_dev():
+        """Generate pip install command with dev dependencies."""
+        version = pypi_version()
+        return f"pip install ssh-tools-suite[dev]=={version}"
+    
+    @env.macro
+    def pip_install_docs():
+        """Generate pip install command with docs dependencies."""
+        version = pypi_version()
+        return f"pip install ssh-tools-suite[docs]=={version}"
+    
+    @env.macro
+    def pip_install_all():
+        """Generate pip install command with all dependencies."""
+        version = pypi_version()
+        return f"pip install ssh-tools-suite[dev,docs]=={version}"
+    
+    @env.macro
+    def download_filename(base_name="SSH-Tunnel-Manager"):
+        """Generate download filename with current version."""
+        version = pypi_version()
+        return f"{base_name}-v{version}-Windows.zip"
+    
+    @env.macro
     def download_link(filename_template):
         """Generate download links with current version."""
         version = pypi_version()

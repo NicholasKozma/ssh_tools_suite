@@ -430,7 +430,7 @@ ssh-tunnel-manager-gui
 echo Installing SSH Tools Suite Third Party Tools...
 
 REM Install SSH Tools Suite
-pip install ssh-tools-suite
+{{ pip_install_cmd() }}
 
 REM Run third party installer silently
 python -m third_party_installer --silent --required-only

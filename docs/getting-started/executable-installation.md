@@ -12,10 +12,10 @@ Visit our [**GitHub Releases**](https://github.com/NicholasKozma/ssh_tools_suite
 
 | Platform | File | Description |
 |----------|------|-------------|
-| Windows | `SSH-Tunnel-Manager-v*.*.*.zip` | Main tunnel management application |
-| Windows | `SSH-Tools-Installer-v*.*.*.zip` | Third-party software installer |
-| macOS | `SSH-Tools-Suite-v*.*.*.dmg` | Coming soon |
-| Linux | `SSH-Tools-Suite-v*.*.*.AppImage` | Coming soon |
+| Windows | `{{ download_filename() }}` | Main tunnel management application |
+| Windows | `{{ download_filename("SSH-Tools-Installer") }}` | Third-party software installer |
+| macOS | `SSH-Tools-Suite-v{{ pypi_version() }}.dmg` | Coming soon |
+| Linux | `SSH-Tools-Suite-v{{ pypi_version() }}.AppImage` | Coming soon |
 
 ## Windows Installation
 
@@ -23,8 +23,8 @@ Visit our [**GitHub Releases**](https://github.com/NicholasKozma/ssh_tools_suite
 
 1. **Download the Archive**
    - Go to [GitHub Releases](https://github.com/NicholasKozma/ssh_tools_suite/releases)
-   - Download `SSH-Tunnel-Manager-v*.*.*.zip` for the main application
-   - Or download `SSH-Tools-Installer-v*.*.*.zip` for the installer tool
+   - Download `{{ download_filename() }}` for the main application
+   - Or download `{{ download_filename("SSH-Tools-Installer") }}` for the installer tool
 
 2. **Extract the Files**
    ```cmd

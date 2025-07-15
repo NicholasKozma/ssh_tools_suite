@@ -10,7 +10,7 @@ This guide will help you install and set up the SSH Tools Suite on your system.
 The easiest way to install SSH Tools Suite is via PyPI:
 
 ```bash
-pip install ssh-tools-suite
+{{ pip_install_cmd() }}
 ```
 
 ## System Requirements
@@ -34,7 +34,7 @@ pip install ssh-tools-suite
 #### Basic Installation
 ```bash
 # Install the latest stable version
-pip install ssh-tools-suite
+{{ pip_install_cmd() }}
 
 # Verify installation
 ssh-tunnel-manager --version
@@ -44,13 +44,13 @@ ssh-tools-installer --version
 #### With Optional Dependencies
 ```bash
 # Install with development tools
-pip install ssh-tools-suite[dev]
+{{ pip_install_dev() }}
 
 # Install with documentation tools
-pip install ssh-tools-suite[docs]
+{{ pip_install_docs() }}
 
 # Install with all optional dependencies
-pip install ssh-tools-suite[dev,docs]
+{{ pip_install_all() }}
 ```
 
 #### Upgrade to Latest Version
@@ -94,7 +94,7 @@ poetry shell
 1. **Install Python 3.9+** from [python.org](https://python.org) or Microsoft Store
 2. **Install SSH Tools Suite**:
    ```cmd
-   pip install ssh-tools-suite
+   {{ pip_install_cmd() }}
    ```
 3. **Verify SSH Client**: Windows 10/11 includes OpenSSH by default
    ```cmd
@@ -221,7 +221,7 @@ pip install --user ssh-tools-suite
 python -m venv ssh-tools-env
 source ssh-tools-env/bin/activate  # Linux/macOS
 # ssh-tools-env\Scripts\activate  # Windows
-pip install ssh-tools-suite
+{{ pip_install_cmd() }}
 ```
 
 ### Issue: Qt platform plugin issues on Linux
