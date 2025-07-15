@@ -46,6 +46,20 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r docs-requirements.txt
 
+      - name: Extract version
+        id: get_version
+        run: |
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/v}
+            echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+            echo "Using tag version: $VERSION"
+          else
+            # Get version from pyproject.toml
+            VERSION=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")
+            echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+            echo "Using pyproject.toml version: $VERSION"
+          fi
+
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
@@ -56,6 +70,8 @@ jobs:
         env:
           # Override the site_url for GitHub Pages
           SITE_URL: ${{ steps.pages.outputs.base_url }}
+          # Pass version to macros
+          PACKAGE_VERSION: ${{ steps.get_version.outputs.VERSION }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

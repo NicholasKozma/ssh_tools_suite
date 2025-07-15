@@ -28,25 +28,33 @@ jobs:
         python -m pip install --upgrade pip
         pip install requests
         
-    - name: Get latest PyPI version
-      id: pypi_version
+    - name: Get version
+      id: get_version
       run: |
-        LATEST_VERSION=$(python -c "
-        import requests
-        import json
-        
-        response = requests.get('https://pypi.org/pypi/ssh-tools-suite/json')
-        data = response.json()
-        latest_version = data['info']['version']
-        print(latest_version)
-        ")
-        
-        echo "VERSION=$LATEST_VERSION" >> $GITHUB_OUTPUT
-        echo "Latest PyPI version: $LATEST_VERSION"
+        if [[ $GITHUB_REF == refs/tags/* ]]; then
+          # If triggered by a release, use the tag version
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "Using tag version: $VERSION"
+        else
+          # Otherwise, get latest from PyPI
+          LATEST_VERSION=$(python -c "
+          import requests
+          import json
+          
+          response = requests.get('https://pypi.org/pypi/ssh-tools-suite/json')
+          data = response.json()
+          latest_version = data['info']['version']
+          print(latest_version)
+          ")
+          
+          echo "VERSION=$LATEST_VERSION" >> $GITHUB_OUTPUT
+          echo "Latest PyPI version: $LATEST_VERSION"
+        fi
         
     - name: Update documentation with latest version
       run: |
-        VERSION=${{ steps.pypi_version.outputs.VERSION }}
+        VERSION=${{ steps.get_version.outputs.VERSION }}
         echo "Updating docs to version: $VERSION"
         
         # Update main docs page
@@ -82,7 +90,7 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git add -A
-        git commit -m "📚 Update documentation to version ${{ steps.pypi_version.outputs.VERSION }}"
+        git commit -m "📚 Update documentation to version ${{ steps.get_version.outputs.VERSION }}"
         git push
         
     - name: Deploy documentation
