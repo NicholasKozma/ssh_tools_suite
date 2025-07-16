@@ -547,7 +547,7 @@ class ProxyConfigDialog(QDialog):
             from pathlib import Path
             # Use the config dir where px.exe is extracted by the installer
             app_data = os.environ.get('APPDATA', os.path.expanduser('~'))
-            config_dir = Path(app_data) / 'SSH_Tools_Suite' / 'ThirdPartyInstaller'
+            config_dir = Path(app_data) / 'ssh_tools_suite' / 'third_party_installer'
             px_path = config_dir / 'px.exe'
             if not px_path.exists():
                 QMessageBox.warning(self, "px.exe Not Found", 
@@ -595,13 +595,20 @@ class ProxyConfigDialog(QDialog):
             import subprocess
             from pathlib import Path
             app_data = os.environ.get('APPDATA', os.path.expanduser('~'))
-            config_dir = Path(app_data) / 'SSH_Tools_Suite' / 'ThirdPartyInstaller'
+            config_dir = Path(app_data) / 'ssh_tools_suite' / 'third_party_installer'
             px_ini_path = config_dir / 'px.ini'
             if not px_ini_path.exists():
-                QMessageBox.warning(self, "px.ini Not Found", 
-                                  f"px.ini not found in config directory:\n{px_ini_path}\n\n"
-                                  f"Expected location: {px_ini_path}")
-                return
+                # If px.ini doesn't exist, but px.ini.template does, copy it
+                px_ini_template = config_dir / 'px.ini.template'
+                if px_ini_template.exists():
+                    import shutil
+                    shutil.copy(px_ini_template, px_ini_path)
+                else:
+                    QMessageBox.warning(self, "px.ini Not Found", 
+                        f"px.ini not found in config directory:\n{px_ini_path}\n\n"
+                        f"Expected location: {px_ini_path}\n\n"
+                        f"px.ini.template was also not found in: {px_ini_template}")
+                    return
             if os.name == 'nt':
                 os.startfile(str(px_ini_path))
             else:
@@ -624,7 +631,7 @@ class ProxyConfigDialog(QDialog):
             px_port = 3128  # default
             try:
                 app_data = os.environ.get('APPDATA', os.path.expanduser('~'))
-                config_dir = Path(app_data) / 'SSH_Tools_Suite' / 'ThirdPartyInstaller'
+                config_dir = Path(app_data) / 'ssh_tools_suite' / 'third_party_installer'
                 px_ini_path = config_dir / 'px.ini'
                 if px_ini_path.exists():
                     with open(px_ini_path, 'r') as f:

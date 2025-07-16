@@ -63,7 +63,7 @@ class ThirdPartyInstaller:
         if os.name == 'nt':
             # Windows
             app_data = os.environ.get('APPDATA', os.path.expanduser('~'))
-            return Path(app_data) / 'SSH_Tools_Suite' / 'ThirdPartyInstaller'
+            return Path(app_data) / 'ssh_tools_suite' / 'third_party_installer'
         else:
             # Unix-like systems
             return Path.home() / '.config' / 'ssh_tools_suite' / 'third_party_installer'
@@ -526,16 +526,23 @@ class ThirdPartyInstaller:
         self.cleanup()
     
     def _ensure_px_ini(self):
-        """Ensure px.ini exists by copying from px.ini.template if needed."""
-        # Use the user config dir for px.ini
+        """Ensure px.ini and px.ini.template exist in the config dir."""
         ini_file = self.config_dir / 'px.ini'
-        if not ini_file.exists():
+        template_file = self.config_dir / 'px.ini.template'
+        # Always ensure px.ini.template is present
+        if not template_file.exists():
             try:
                 with importlib.resources.files('third_party_installer.data').joinpath('px.ini.template').open('rb') as src, \
-                     open(ini_file, 'wb') as dst:
+                     open(template_file, 'wb') as dst:
                     dst.write(src.read())
             except Exception as e:
                 print(f"Failed to copy px.ini.template: {e}")
+        # Ensure px.ini exists by copying from template if needed
+        if not ini_file.exists() and template_file.exists():
+            try:
+                shutil.copyfile(template_file, ini_file)
+            except Exception as e:
+                print(f"Failed to create px.ini from template: {e}")
 
     def _get_bundled_px_exe_path(self) -> str:
         """Return the path to the bundled px.exe, extracting it if needed."""
