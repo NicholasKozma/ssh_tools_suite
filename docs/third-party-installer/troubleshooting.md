@@ -19,7 +19,7 @@ Common issues and solutions when working with the Third Party Installer module.
 ```powershell
 # Run PowerShell as Administrator
 Start-Process powershell -Verb RunAs
-cd "C:\Path\To\SSH_Tools_Suite"
+cd "C:\Path\To\ssh_tools_suite"
 python -m third_party_installer
 ```
 
@@ -336,7 +336,7 @@ print(f"Download URL: {psexec_tool.download_url}")
 2. **Add antivirus exclusions**:
 ```powershell
 # Add Windows Defender exclusion (requires admin)
-Add-MpPreference -ExclusionPath "C:\Program Files\SSH_Tools_Suite"
+Add-MpPreference -ExclusionPath "C:\Program Files\ssh_tools_suite"
 Add-MpPreference -ExclusionProcess "psexec.exe"
 ```
 

@@ -355,13 +355,13 @@ The installer respects these environment variables:
 ### Default Directories
 
 - **Windows**: 
-  - Config: `%APPDATA%\SSH_Tools_Suite\third_party_installer`
+  - Config: `%APPDATA%\ssh_tools_suite\third_party_installer`
   - Temp: `%TEMP%\ssh_tools_installer`
 - **Linux**: 
   - Config: `~/.config/ssh_tools_suite/third_party_installer`
   - Temp: `/tmp/ssh_tools_installer`
 - **macOS**: 
-  - Config: `~/Library/Application Support/SSH_Tools_Suite/third_party_installer`
+  - Config: `~/Library/Application Support/ssh_tools_suite/third_party_installer`
   - Temp: `/tmp/ssh_tools_installer`
 
 ### Configuration Files

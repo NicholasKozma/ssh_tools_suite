@@ -91,7 +91,7 @@ include = ["ssh_tunnel_manager*", "ssh_tools_common*", "third_party_installer*"]
 [tool.setuptools.package-data]
 "ssh_tunnel_manager" = ["*.md", "*.txt", "*.ini"]
 "ssh_tunnel_manager.gui" = ["assets/*", "components/*", "dialogs/*", "widgets/*"]
-"third_party_installer" = ["*.md", "*.txt", "*.ini", "data/px.ini.template", "data/px.exe", "data/README.md"]
+"third_party_installer" = ["*.md", "*.txt", "*.ini", "data/px.ini.template", "data/px.exe"]
 "ssh_tools_common" = ["*.md", "*.txt", "*.ini"]
 
 [tool.black]

@@ -489,7 +489,7 @@ class ProxyConfigDialog(QDialog):
         """Get path to proxy configuration file."""
         # Store in user's AppData directory
         app_data = os.environ.get('APPDATA', os.path.expanduser('~'))
-        config_dir = Path(app_data) / 'SSH_Tools_Suite'
+        config_dir = Path(app_data) / 'ssh_tools_suite'
         config_dir.mkdir(exist_ok=True)
         return config_dir / 'proxy_config.json'
     

@@ -386,7 +386,7 @@ for tool_name, tool in installer.tools_config.items():
 
 ```bash
 # Clear installation cache
-rm -rf %APPDATA%\SSH_Tools_Suite\ThirdPartyInstaller
+rm -rf %APPDATA%\ssh_tools_suite\ThirdPartyInstaller
 
 # Or on Unix-like systems
 rm -rf ~/.config/ssh_tools_suite/third_party_installer
@@ -473,7 +473,7 @@ rmdir /S C:\px
 
 ```bash
 # Remove installer configuration
-rmdir /S "%APPDATA%\SSH_Tools_Suite\ThirdPartyInstaller"
+rmdir /S "%APPDATA%\ssh_tools_suite\ThirdPartyInstaller"
 
 # Clear environment variables
 # Remove added PATH entries manually through System Properties

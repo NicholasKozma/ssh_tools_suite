@@ -142,14 +142,12 @@ class ThirdPartyInstaller:
         try:
             # Try to load from SSH installer's config
             app_data = os.environ.get('APPDATA', os.path.expanduser('~'))
-            config_file = Path(app_data) / 'SSH_Tools_Suite' / 'proxy_config.json'
-            
+            config_file = Path(app_data) / 'ssh_tools_suite' / 'proxy_config.json'
             if config_file.exists():
                 with open(config_file, 'r') as f:
                     return json.load(f)
         except Exception:
             pass
-        
         return {}
     
     def _check_all_tools_status(self):
