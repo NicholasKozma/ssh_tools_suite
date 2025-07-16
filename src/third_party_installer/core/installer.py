@@ -11,6 +11,7 @@ import tempfile
 import subprocess
 import urllib.request
 import urllib.error
+import importlib.resources
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Any
 from dataclasses import dataclass
@@ -125,7 +126,7 @@ class ThirdPartyInstaller:
             description='PX - Corporate proxy authentication tool (bundled)',
             download_url='',  # Not needed - bundled with package
             executable_paths=[
-                str(Path(__file__).parent.parent.parent.parent / 'tools' / 'px' / 'px.exe'),  # Bundled location
+                self._get_bundled_px_exe_path(),
                 'C:\\px\\px.exe',
                 'C:\\Program Files\\PX\\px.exe'
             ],
@@ -526,10 +527,27 @@ class ThirdPartyInstaller:
     
     def _ensure_px_ini(self):
         """Ensure px.ini exists by copying from px.ini.template if needed."""
-        px_dir = Path(__file__).parent.parent.parent.parent / 'tools' / 'px'
-        ini_file = px_dir / 'px.ini'
-        template_file = px_dir / 'px.ini.template'
-        if not ini_file.exists() and template_file.exists():
-            shutil.copyfile(template_file, ini_file)
+        # Use the user config dir for px.ini
+        ini_file = self.config_dir / 'px.ini'
+        if not ini_file.exists():
+            try:
+                with importlib.resources.files('third_party_installer.data').joinpath('px.ini.template').open('rb') as src, \
+                     open(ini_file, 'wb') as dst:
+                    dst.write(src.read())
+            except Exception as e:
+                print(f"Failed to copy px.ini.template: {e}")
+
+    def _get_bundled_px_exe_path(self) -> str:
+        """Return the path to the bundled px.exe, extracting it if needed."""
+        # Extract px.exe from package data to config dir if not already present
+        px_exe_path = str(self.config_dir / 'px.exe')
+        if not os.path.exists(px_exe_path):
+            try:
+                with importlib.resources.files('third_party_installer.data').joinpath('px.exe').open('rb') as src, \
+                     open(px_exe_path, 'wb') as dst:
+                    dst.write(src.read())
+            except Exception as e:
+                print(f"Failed to extract px.exe: {e}")
+        return px_exe_path
 
 __all__ = ["ThirdPartyInstaller", "ThirdPartyTool", "InstallationStatus"]
