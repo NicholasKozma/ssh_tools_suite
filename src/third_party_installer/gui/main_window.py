@@ -614,19 +614,18 @@ class ProxyConfigDialog(QDialog):
         """Check current proxy environment variables and show status."""
         try:
             import os
-            
+            from pathlib import Path
             # Get current environment variables
             http_proxy = os.environ.get('http_proxy', '').strip()
             https_proxy = os.environ.get('https_proxy', '').strip()
             HTTP_PROXY = os.environ.get('HTTP_PROXY', '').strip()
             HTTPS_PROXY = os.environ.get('HTTPS_PROXY', '').strip()
-            
-            # Read px.ini to get configured port
+            # Read px.ini to get configured port from user config dir
             px_port = 3128  # default
             try:
-                tools_dir = Path(__file__).parent.parent.parent.parent / "tools"
-                px_ini_path = tools_dir / "px" / "px.ini"
-                
+                app_data = os.environ.get('APPDATA', os.path.expanduser('~'))
+                config_dir = Path(app_data) / 'SSH_Tools_Suite' / 'ThirdPartyInstaller'
+                px_ini_path = config_dir / 'px.ini'
                 if px_ini_path.exists():
                     with open(px_ini_path, 'r') as f:
                         content = f.read()
