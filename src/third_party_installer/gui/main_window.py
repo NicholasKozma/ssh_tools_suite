@@ -540,39 +540,31 @@ class ProxyConfigDialog(QDialog):
             self.px_status_label.setStyleSheet("color: orange;")
     
     def start_px_exe(self):
-        """Start px.exe from tools directory."""
+        """Start px.exe from user config directory (new structure)."""
         try:
             import os
             import subprocess
             from pathlib import Path
-            
-            # Find px.exe in tools directory (new structure)
-            tools_dir = Path(__file__).parent.parent.parent.parent / "tools"
-            px_path = tools_dir / "px" / "px.exe"
-            
+            # Use the config dir where px.exe is extracted by the installer
+            app_data = os.environ.get('APPDATA', os.path.expanduser('~'))
+            config_dir = Path(app_data) / 'SSH_Tools_Suite' / 'ThirdPartyInstaller'
+            px_path = config_dir / 'px.exe'
             if not px_path.exists():
                 QMessageBox.warning(self, "px.exe Not Found", 
-                                  f"px.exe not found in tools directory:\n{px_path}\n\n"
+                                  f"px.exe not found in config directory:\n{px_path}\n\n"
                                   f"Expected location: {px_path}")
                 return
-            
-            # Start px.exe
             subprocess.Popen([str(px_path)], 
                            creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0)
-            
-            # Give it time to start
             import time
             time.sleep(2)
-            
-            # Update status
             self.update_px_status()
-            
             QMessageBox.information(self, "px.exe Started", 
                                   "px.exe has been started successfully!")
         except Exception as e:
             QMessageBox.critical(self, "Error Starting px.exe", 
                                f"Could not start px.exe:\n{str(e)}")
-    
+
     def stop_px_exe(self):
         """Stop px.exe process."""
         try:
@@ -597,28 +589,23 @@ class ProxyConfigDialog(QDialog):
                               f"Could not stop px.exe:\n{str(e)}")
     
     def configure_px_ini(self):
-        """Open px.ini configuration."""
+        """Open px.ini configuration from user config directory (new structure)."""
         try:
             import os
             import subprocess
             from pathlib import Path
-            
-            # Find px.ini in tools directory (new structure)
-            tools_dir = Path(__file__).parent.parent.parent.parent / "tools"
-            px_ini_path = tools_dir / "px" / "px.ini"
-            
+            app_data = os.environ.get('APPDATA', os.path.expanduser('~'))
+            config_dir = Path(app_data) / 'SSH_Tools_Suite' / 'ThirdPartyInstaller'
+            px_ini_path = config_dir / 'px.ini'
             if not px_ini_path.exists():
                 QMessageBox.warning(self, "px.ini Not Found", 
-                                  f"px.ini not found in tools directory:\n{px_ini_path}\n\n"
+                                  f"px.ini not found in config directory:\n{px_ini_path}\n\n"
                                   f"Expected location: {px_ini_path}")
                 return
-            
-            # Open with default text editor
             if os.name == 'nt':
                 os.startfile(str(px_ini_path))
             else:
                 subprocess.run(['xdg-open', str(px_ini_path)])
-                
         except Exception as e:
             QMessageBox.critical(self, "Error Opening px.ini", 
                                f"Could not open px.ini:\n{str(e)}")
