@@ -523,5 +523,13 @@ class ThirdPartyInstaller:
     def __del__(self):
         """Cleanup on destruction."""
         self.cleanup()
+    
+    def _ensure_px_ini(self):
+        """Ensure px.ini exists by copying from px.ini.template if needed."""
+        px_dir = Path(__file__).parent.parent.parent.parent / 'tools' / 'px'
+        ini_file = px_dir / 'px.ini'
+        template_file = px_dir / 'px.ini.template'
+        if not ini_file.exists() and template_file.exists():
+            shutil.copyfile(template_file, ini_file)
 
 __all__ = ["ThirdPartyInstaller", "ThirdPartyTool", "InstallationStatus"]
