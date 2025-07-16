@@ -236,7 +236,7 @@ tmp/
 build/
 dist/
 *.exe
-!tools/px/px.exe
+!src/third_party_installer/data/px.exe
 *.msi
 *.deb
 *.rpm
