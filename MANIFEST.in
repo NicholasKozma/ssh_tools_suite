@@ -168,3 +168,6 @@ global-exclude .DS_Store
 global-exclude *.so
 global-exclude .git*
 global-exclude *.egg-info*
+
+# Ensure all files in tools/px (including px.ini.template) are included in the package data for PyPI/wheel builds.
+recursive-include tools/px *
