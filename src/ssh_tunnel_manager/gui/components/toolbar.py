@@ -4,7 +4,7 @@ SSH Tunnel Manager - Toolbar Manager
 """
 
 from PySide6.QtWidgets import QHBoxLayout, QPushButton, QFrame
-from PySide6.QtCore import QObject, Signal
+from PySide6.QtCore import QObject, Signal, Qt
 
 
 class ToolbarManager(QObject):
@@ -28,31 +28,72 @@ class ToolbarManager(QObject):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.buttons = {}
+    
+    def _create_styled_button(self, text: str, style: str = "default") -> QPushButton:
+        """Create a styled button with the specified style."""
+        button = QPushButton(text)
+        button.setMinimumHeight(36)
+        button.setCursor(Qt.PointingHandCursor)
+        
+        if style in ["primary", "success", "danger"]:
+            button.setObjectName(style)
+        
+        # Add tooltips
+        if "Add" in text:
+            button.setToolTip("Add a new SSH tunnel configuration")
+        elif "Edit" in text:
+            button.setToolTip("Edit the selected tunnel configuration")
+        elif "Delete" in text:
+            button.setToolTip("Delete the selected tunnel configuration")
+        elif "Start" in text:
+            button.setToolTip("Start the selected tunnel")
+        elif "Stop" in text:
+            button.setToolTip("Stop the running tunnel")
+        elif "Test" in text:
+            button.setToolTip("Test the SSH connection")
+        elif "Files" in text and "Remote" not in text:
+            button.setToolTip("Browse files on the SSH host")
+        elif "Remote Files" in text:
+            button.setToolTip("Browse files on the remote forwarded host")
+        elif "Web" in text:
+            button.setToolTip("Open web browser to the forwarded service")
+        elif "RTSP" in text:
+            button.setToolTip("Launch RTSP video stream viewer")
+        elif "RDP" in text:
+            button.setToolTip("Launch Remote Desktop connection")
+        elif "Network Scanner" in text:
+            button.setToolTip("Scan network for SSH hosts")
+        elif "PowerShell" in text:
+            button.setToolTip("Generate PowerShell SSH setup script")
+        
+        return button
         
     def create_toolbar(self) -> QHBoxLayout:
         """Create the simplified toolbar with essential buttons."""
         toolbar_layout = QHBoxLayout()
+        toolbar_layout.setSpacing(8)
+        toolbar_layout.setContentsMargins(10, 10, 10, 10)
         
         # Core tunnel management buttons
-        self.buttons['add'] = QPushButton("➕ Add")
-        self.buttons['edit'] = QPushButton("✏️ Edit")
-        self.buttons['delete'] = QPushButton("🗑️ Delete")
+        self.buttons['add'] = self._create_styled_button("➕ Add", "primary")
+        self.buttons['edit'] = self._create_styled_button("✏️ Edit", "default")
+        self.buttons['delete'] = self._create_styled_button("🗑️ Delete", "danger")
         
         # Tunnel control buttons
-        self.buttons['start'] = QPushButton("▶️ Start")
-        self.buttons['stop'] = QPushButton("⏹️ Stop")
-        self.buttons['test'] = QPushButton("🔍 Test")
+        self.buttons['start'] = self._create_styled_button("▶️ Start", "success")
+        self.buttons['stop'] = self._create_styled_button("⏹️ Stop", "danger")
+        self.buttons['test'] = self._create_styled_button("🔍 Test", "default")
         
         # Service access buttons (simplified)
-        self.buttons['files'] = QPushButton("📁 Files")
-        self.buttons['remote_files'] = QPushButton("🔒 Remote Files")
-        self.buttons['web'] = QPushButton("🌐 Web")
-        self.buttons['rtsp'] = QPushButton("📹 RTSP")
-        self.buttons['rdp'] = QPushButton("🖥️ RDP")
+        self.buttons['files'] = self._create_styled_button("📁 Files", "default")
+        self.buttons['remote_files'] = self._create_styled_button("🔒 Remote Files", "default")
+        self.buttons['web'] = self._create_styled_button("🌐 Web", "default")
+        self.buttons['rtsp'] = self._create_styled_button("📹 RTSP", "default")
+        self.buttons['rdp'] = self._create_styled_button("🖥️ RDP", "default")
         
         # Network tools
-        self.buttons['network_scanner'] = QPushButton("🔍 Network Scanner")
-        self.buttons['powershell_generator'] = QPushButton("📜 PowerShell")
+        self.buttons['network_scanner'] = self._create_styled_button("🔍 Network Scanner", "default")
+        self.buttons['powershell_generator'] = self._create_styled_button("📜 PowerShell", "default")
         
         # Connect signals
         self.buttons['add'].clicked.connect(self.add_tunnel)

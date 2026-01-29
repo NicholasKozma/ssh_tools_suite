@@ -35,14 +35,23 @@ from .components.powershell_generator import PowerShellGeneratorManager
 from .components.ssh_key_generator import SSHKeyManager
 from .components.ssh_key_deployment import SSHKeyDeploymentManager
 
+# Import modern stylesheet
+from .styles.modern_style import get_stylesheet
+
 
 class SSHTunnelManager(QMainWindow):
     """Simplified SSH Tunnel Manager with clean component-based architecture."""
     
     def __init__(self):
         super().__init__()
-        self.setWindowTitle(f"{APP_NAME} - Professional")
-        self.setGeometry(100, 100, 1000, 700)
+        self.setWindowTitle(f"🔐 {APP_NAME} - Professional Edition")
+        self.setGeometry(100, 100, 1200, 800)
+        
+        # Apply modern stylesheet
+        self.setStyleSheet(get_stylesheet())
+        
+        # Set window icon
+        self._set_window_icon()
         
         # Core managers
         self.config_manager = ConfigurationManager()
@@ -70,11 +79,42 @@ class SSHTunnelManager(QMainWindow):
         self._load_configurations()
         self._start_monitoring()
     
+    def _set_window_icon(self):
+        """Set a custom window icon."""
+        try:
+            # Create a simple but professional icon
+            pixmap = QPixmap(64, 64)
+            pixmap.fill(Qt.transparent)
+            
+            painter = QPainter(pixmap)
+            painter.setRenderHint(QPainter.Antialiasing)
+            
+            # Draw background circle
+            painter.setBrush(QBrush(Qt.GlobalColor.blue))
+            painter.setPen(Qt.NoPen)
+            painter.drawEllipse(4, 4, 56, 56)
+            
+            # Draw a simple "SSH" representation
+            painter.setPen(Qt.GlobalColor.white)
+            painter.setBrush(QBrush(Qt.GlobalColor.white))
+            painter.drawRect(16, 24, 32, 4)
+            painter.drawRect(16, 32, 32, 4)
+            
+            painter.end()
+            
+            icon = QIcon(pixmap)
+            self.setWindowIcon(icon)
+        except Exception as e:
+            # If icon creation fails, just continue without it
+            pass
+    
     def _setup_ui(self):
         """Setup the main UI."""
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         main_layout = QVBoxLayout(central_widget)
+        main_layout.setContentsMargins(12, 12, 12, 12)
+        main_layout.setSpacing(12)
         
         # Toolbar
         toolbar_layout = self.toolbar_manager.create_toolbar()
@@ -96,11 +136,13 @@ class SSHTunnelManager(QMainWindow):
         
         main_layout.addWidget(content_splitter)
         
-        # Status bar
-        self.statusBar().showMessage("Ready")
+        # Status bar with modern styling
+        status_bar = self.statusBar()
+        status_bar.showMessage("Ready ✨")
         
-        # Initial log
-        self.log("SSH Tunnel Manager started")
+        # Initial log with welcome message
+        self.log("🚀 SSH Tunnel Manager started successfully")
+        self.log(f"📦 Loaded {len(self.config_manager.get_all_configurations())} tunnel configurations")
     
     def _setup_connections(self):
         """Connect component signals."""
@@ -510,8 +552,29 @@ class SSHTunnelManager(QMainWindow):
             self.ssh_key_deployment.deploy_key_for_tunnel(tunnel_config_dict)
     
     def _show_about(self):
-        """Show about dialog."""
-        QMessageBox.about(self, "About", f"{APP_NAME}\nProfessional SSH Tunnel Manager")
+        """Show about dialog with modern styling."""
+        about_text = f"""
+        <div style='text-align: center;'>
+            <h2 style='color: #2196F3; margin-bottom: 10px;'>🔐 {APP_NAME}</h2>
+            <p style='font-size: 12pt; color: #555; margin: 5px 0;'>
+                <b>Professional SSH Tunnel Manager</b>
+            </p>
+            <hr style='border: none; border-top: 2px solid #2196F3; margin: 15px 0;'>
+            <p style='color: #666; margin: 10px 0;'>
+                A comprehensive solution for managing SSH tunnels,<br>
+                port forwarding, and secure remote connections.
+            </p>
+            <p style='color: #888; font-size: 9pt; margin-top: 20px;'>
+                Created with ❤️ using Python and PySide6
+            </p>
+        </div>
+        """
+        msg_box = QMessageBox(self)
+        msg_box.setWindowTitle("About")
+        msg_box.setTextFormat(Qt.RichText)
+        msg_box.setText(about_text)
+        msg_box.setStandardButtons(QMessageBox.Ok)
+        msg_box.exec()
     
     def log(self, message: str):
         """Log a message."""

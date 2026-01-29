@@ -31,6 +31,14 @@ class TunnelTableWidget(QObject):
             "Name", "Status", "Type", "Local Port", "Remote", "SSH Host", "Description"
         ])
         
+        # Configure table appearance
+        self.table.setAlternatingRowColors(True)
+        self.table.setSelectionBehavior(QTableWidget.SelectRows)
+        self.table.setSelectionMode(QTableWidget.SingleSelection)
+        self.table.verticalHeader().setVisible(False)
+        self.table.setShowGrid(False)
+        self.table.setFocusPolicy(Qt.StrongFocus)
+        
         # Configure headers
         header = self.table.horizontalHeader()
         header.setStretchLastSection(True)
@@ -40,6 +48,10 @@ class TunnelTableWidget(QObject):
         header.setSectionResizeMode(3, QHeaderView.ResizeToContents)
         header.setSectionResizeMode(4, QHeaderView.ResizeToContents)
         header.setSectionResizeMode(5, QHeaderView.ResizeToContents)
+        header.setDefaultAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        
+        # Set minimum row height for better readability
+        self.table.verticalHeader().setDefaultSectionSize(40)
         
         # Connect signals
         self.table.selectionModel().selectionChanged.connect(self._on_selection_changed)
@@ -71,35 +83,53 @@ class TunnelTableWidget(QObject):
         
         for row, (name, config) in enumerate(configs.items()):
             # Name
-            self.table.setItem(row, 0, QTableWidgetItem(name))
+            name_item = QTableWidgetItem(name)
+            name_item.setFlags(name_item.flags() & ~Qt.ItemIsEditable)
+            self.table.setItem(row, 0, name_item)
             
-            # Status
+            # Status with emoji
             if name in active_tunnels:
-                status_text = active_tunnels[name].get_status()
+                status_text = "🟢 Running"
+                status_item = QTableWidgetItem(status_text)
             else:
                 status_text = "🔴 Stopped"
-            status_item = QTableWidgetItem(status_text)
+                status_item = QTableWidgetItem(status_text)
+            
+            status_item.setFlags(status_item.flags() & ~Qt.ItemIsEditable)
+            status_item.setTextAlignment(Qt.AlignCenter)
             self.table.setItem(row, 1, status_item)
             
             # Type
-            self.table.setItem(row, 2, QTableWidgetItem(config.tunnel_type.title()))
+            type_item = QTableWidgetItem(config.tunnel_type.title())
+            type_item.setFlags(type_item.flags() & ~Qt.ItemIsEditable)
+            type_item.setTextAlignment(Qt.AlignCenter)
+            self.table.setItem(row, 2, type_item)
             
             # Local Port
-            self.table.setItem(row, 3, QTableWidgetItem(str(config.local_port)))
+            port_item = QTableWidgetItem(str(config.local_port))
+            port_item.setFlags(port_item.flags() & ~Qt.ItemIsEditable)
+            port_item.setTextAlignment(Qt.AlignCenter)
+            self.table.setItem(row, 3, port_item)
             
             # Remote
             if config.tunnel_type == 'dynamic':
                 remote_str = "SOCKS Proxy"
             else:
                 remote_str = f"{config.remote_host}:{config.remote_port}"
-            self.table.setItem(row, 4, QTableWidgetItem(remote_str))
+            remote_item = QTableWidgetItem(remote_str)
+            remote_item.setFlags(remote_item.flags() & ~Qt.ItemIsEditable)
+            self.table.setItem(row, 4, remote_item)
             
             # SSH Host
             ssh_str = f"{config.ssh_user}@{config.ssh_host}:{config.ssh_port}"
-            self.table.setItem(row, 5, QTableWidgetItem(ssh_str))
+            ssh_item = QTableWidgetItem(ssh_str)
+            ssh_item.setFlags(ssh_item.flags() & ~Qt.ItemIsEditable)
+            self.table.setItem(row, 5, ssh_item)
             
             # Description
-            self.table.setItem(row, 6, QTableWidgetItem(config.description))
+            desc_item = QTableWidgetItem(config.description)
+            desc_item.setFlags(desc_item.flags() & ~Qt.ItemIsEditable)
+            self.table.setItem(row, 6, desc_item)
     
     def get_selected_config_name(self) -> str:
         """Get the currently selected configuration name."""

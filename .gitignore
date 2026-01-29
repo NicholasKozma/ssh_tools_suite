@@ -231,6 +231,7 @@ tmp/
 *.temp
 *.bak
 *.backup
+*.github
 
 # Build artifacts
 build/
