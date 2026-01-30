@@ -1,13 +1,16 @@
 """
-GUI components package initialization
+GUI styles package initialization
 """
 
-from .toolbar import ToolbarManager
-from .table_widget import TunnelTableWidget
-from .log_widget import LogWidget
+from .modern_style import get_stylesheet
+from .modern_theme import get_modern_stylesheet, COLORS, ICONS
+from .professional_theme import get_professional_stylesheet, get_status_style
 
 __all__ = [
-    'ToolbarManager',
-    'TunnelTableWidget', 
-    'LogWidget'
+    'get_stylesheet',
+    'get_modern_stylesheet',
+    'get_professional_stylesheet',
+    'get_status_style',
+    'COLORS',
+    'ICONS',
 ]

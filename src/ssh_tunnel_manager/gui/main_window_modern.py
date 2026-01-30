@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-SSH Tunnel Manager - Professional Main Window
-Enterprise-grade interface with clean design
+SSH Tunnel Manager - Ultra Modern Redesigned Main Window
+Complete visual overhaul with card-based interface, dashboard, and modern styling
 """
 
 import sys
@@ -10,10 +10,10 @@ from pathlib import Path
 from typing import Dict
 
 from PySide6.QtWidgets import (
-    QMainWindow, QWidget, QVBoxLayout, QSplitter,
-    QSystemTrayIcon, QMenu, QApplication, QMessageBox
+    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QSplitter,
+    QSystemTrayIcon, QMenu, QApplication, QMessageBox, QTabWidget
 )
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QAction, QIcon, QPixmap, QPainter, QBrush
 
 from ..core.models import TunnelConfig
@@ -22,11 +22,11 @@ from ..core.tunnel_process import TunnelProcess
 from ..core.monitor import TunnelMonitorThread
 from ..core.constants import APP_NAME
 
-# Import professional components
-from .components.professional_toolbar import ProfessionalToolbar
-from .widgets.professional_cards import ProfessionalTunnelCardsWidget
-from .widgets.professional_dashboard import ProfessionalDashboard
-from .widgets.professional_log import ProfessionalLogWidget, log_level_from_message
+# Import modern components
+from .components.modern_toolbar import ModernToolbar
+from .widgets.tunnel_cards import TunnelCardsWidget
+from .widgets.dashboard import DashboardWidget
+from .widgets.modern_log import ModernLogWidget, log_level_from_message
 
 # Import existing components
 from .components.file_operations import FileOperationsManager
@@ -37,21 +37,21 @@ from .components.powershell_generator import PowerShellGeneratorManager
 from .components.ssh_key_generator import SSHKeyManager
 from .components.ssh_key_deployment import SSHKeyDeploymentManager
 
-# Import professional theme
-from .styles.professional_theme import get_professional_stylesheet
+# Import modern theme
+from .styles.modern_theme import get_modern_stylesheet
 
 
 class SSHTunnelManager(QMainWindow):
-    """Professional SSH Tunnel Manager with enterprise-grade interface."""
+    """Ultra-modern SSH Tunnel Manager with card-based dashboard interface."""
     
     def __init__(self):
         super().__init__()
-        self.setWindowTitle(f"{APP_NAME} - Professional Edition")
+        self.setWindowTitle(f"🔐 {APP_NAME} - Modern Edition")
         self.setGeometry(100, 100, 1400, 900)
         self.setMinimumSize(1200, 700)
         
-        # Apply professional stylesheet
-        self.setStyleSheet(get_professional_stylesheet())
+        # Apply ultra-modern stylesheet
+        self.setStyleSheet(get_modern_stylesheet())
         
         # Set window icon
         self._set_window_icon()
@@ -60,11 +60,11 @@ class SSHTunnelManager(QMainWindow):
         self.config_manager = ConfigurationManager()
         self.active_tunnels: Dict[str, TunnelProcess] = {}
         
-        # Professional UI Components
-        self.toolbar = ProfessionalToolbar(self)
-        self.dashboard = ProfessionalDashboard(self)
-        self.tunnel_cards = ProfessionalTunnelCardsWidget(self)
-        self.log_widget = ProfessionalLogWidget(self)
+        # Modern UI Components
+        self.toolbar = ModernToolbar(self)
+        self.dashboard = DashboardWidget(self)
+        self.tunnel_cards = TunnelCardsWidget(self)
+        self.log_widget = ModernLogWidget(self)
         
         # Existing service handlers
         self.file_ops_manager = FileOperationsManager(self)
@@ -88,14 +88,14 @@ class SSHTunnelManager(QMainWindow):
     def _set_window_icon(self):
         """Set a custom window icon."""
         try:
-            from .styles.professional_theme import COLORS
+            from .styles.modern_theme import COLORS
             pixmap = QPixmap(64, 64)
             pixmap.fill(Qt.transparent)
             
             painter = QPainter(pixmap)
             painter.setRenderHint(QPainter.Antialiasing)
             
-            # Professional icon design
+            # Modern icon design
             painter.setBrush(QBrush(Qt.GlobalColor.blue))
             painter.setPen(Qt.NoPen)
             painter.drawEllipse(4, 4, 56, 56)
@@ -113,47 +113,50 @@ class SSHTunnelManager(QMainWindow):
             pass
     
     def _setup_ui(self):
-        """Setup the professional UI."""
+        """Setup the ultra-modern UI."""
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         main_layout = QVBoxLayout(central_widget)
-        main_layout.setContentsMargins(12, 12, 12, 12)
-        main_layout.setSpacing(12)
+        main_layout.setContentsMargins(16, 16, 16, 16)
+        main_layout.setSpacing(16)
         
-        # Professional toolbar
+        # Modern toolbar
         main_layout.addWidget(self.toolbar)
         
-        # Content area with splitter
+        # Main content area with splitter
         content_splitter = QSplitter(Qt.Vertical)
-        content_splitter.setHandleWidth(2)
+        content_splitter.setHandleWidth(4)
         
         # Top section: Dashboard + Tunnel Cards
         top_section = QWidget()
         top_layout = QVBoxLayout(top_section)
         top_layout.setContentsMargins(0, 0, 0, 0)
-        top_layout.setSpacing(12)
+        top_layout.setSpacing(16)
         
+        # Dashboard (collapsible stats)
         top_layout.addWidget(self.dashboard)
-        self.dashboard.setVisible(False)  # Hidden by default
+        
+        # Tunnel cards
         top_layout.addWidget(self.tunnel_cards)
         
         content_splitter.addWidget(top_section)
+        
+        # Bottom section: Modern log
         content_splitter.addWidget(self.log_widget)
         
-        # Set proportions: 80% cards, 20% logs
-        content_splitter.setStretchFactor(0, 8)
-        content_splitter.setStretchFactor(1, 2)
-        content_splitter.setSizes([720, 180])
+        # Set splitter proportions
+        content_splitter.setStretchFactor(0, 3)
+        content_splitter.setStretchFactor(1, 1)
         
         main_layout.addWidget(content_splitter)
         
-        # Status bar
+        # Modern status bar
         status_bar = self.statusBar()
-        status_bar.showMessage("Ready")
+        status_bar.showMessage("🚀 Ready")
         
         # Welcome message
-        self.log("SSH Tunnel Manager started successfully", "success")
-        self.log(f"Loaded {len(self.config_manager.get_all_configurations())} tunnel configurations", "info")
+        self.log("🎉 SSH Tunnel Manager launched successfully", "success")
+        self.log(f"📦 Loaded {len(self.config_manager.get_all_configurations())} tunnel configurations", "info")
     
     def _setup_connections(self):
         """Connect all signal handlers."""
@@ -179,10 +182,6 @@ class SSHTunnelManager(QMainWindow):
         self.tunnel_cards.edit_tunnel.connect(self._edit_tunnel_by_name)
         self.tunnel_cards.delete_tunnel.connect(self._delete_tunnel_by_name)
         self.tunnel_cards.files_tunnel.connect(self._browse_files_by_name)
-        self.tunnel_cards.web_tunnel.connect(self._open_web_browser_by_name)
-        self.tunnel_cards.rtsp_tunnel.connect(self._launch_rtsp_by_name)
-        self.tunnel_cards.rdp_tunnel.connect(self._launch_rdp_by_name)
-        self.tunnel_cards.test_tunnel.connect(self._test_tunnel_by_name)
         
         # File operations
         self.file_ops_manager.log_message.connect(lambda msg: self.log(msg, log_level_from_message(msg)))
@@ -288,7 +287,7 @@ class SSHTunnelManager(QMainWindow):
         self.dashboard.update_stats(active_count, total_count)
         
         # Update tunnel cards
-        self.tunnel_cards.update_tunnels(configs, self.active_tunnels)
+        self.tunnel_cards.refresh_cards(configs, self.active_tunnels)
         
         # Update toolbar button states
         self.toolbar.update_button_states(False, False)
@@ -438,57 +437,6 @@ class SSHTunnelManager(QMainWindow):
     def _open_web_browser(self):
         """Open web browser."""
         QMessageBox.information(self, "Info", "Please select a running tunnel with web service")
-    
-    def _open_web_browser_by_name(self, config_name: str):
-        """Open web browser for specific tunnel."""
-        config = self.config_manager.get_configuration(config_name)
-        if config and config.tunnel_type == 'local':
-            url = f"http://localhost:{config.local_port}"
-            webbrowser.open(url)
-            self.log(f"Opened web browser: {url}", "info")
-    
-    def _launch_rtsp_by_name(self, config_name: str):
-        """Launch RTSP stream for specific tunnel."""
-        self.rtsp_handler.launch_rtsp_by_name(config_name)
-    
-    def _launch_rdp_by_name(self, config_name: str):
-        """Launch RDP connection for specific tunnel."""
-        self.rdp_handler.launch_rdp_by_name(config_name)
-    
-    def _test_tunnel_by_name(self, config_name: str):
-        """Test tunnel connection by name."""
-        from ..utils.connection_tester import ConnectionTester
-        
-        config = self.config_manager.get_configuration(config_name)
-        if not config:
-            return
-        
-        is_running = config_name in self.active_tunnels and self.active_tunnels[config_name].is_running
-        if not is_running:
-            QMessageBox.warning(self, "Test Error", f"Tunnel '{config_name}' is not running")
-            return
-        
-        self.log(f"Testing tunnel: {config_name}", "info")
-        
-        try:
-            if config.tunnel_type == 'local':
-                if ConnectionTester.test_local_port(config.local_port):
-                    success, message = ConnectionTester.test_tunnel_connection(config)
-                    if success:
-                        self.log(f"Test successful: {message}", "success")
-                        QMessageBox.information(self, "Test Result", f"Tunnel '{config_name}' is working correctly!\n\n{message}")
-                    else:
-                        self.log(f"Test warning: {message}", "warning")
-                        QMessageBox.warning(self, "Test Result", f"Tunnel '{config_name}' has issues:\n\n{message}")
-                else:
-                    self.log(f"Test failed: Local port {config.local_port} not accessible", "error")
-                    QMessageBox.critical(self, "Test Result", f"Tunnel test failed!\n\nLocal port {config.local_port} is not accessible")
-            else:
-                self.log(f"Remote tunnel testing limited", "info")
-                QMessageBox.information(self, "Test Result", f"Remote tunnel '{config_name}' appears to be running")
-        except Exception as e:
-            self.log(f"Error testing tunnel: {str(e)}", "error")
-            QMessageBox.critical(self, "Test Error", f"Test failed: {str(e)}")
     
     def _setup_ssh_key(self):
         """Setup SSH key."""

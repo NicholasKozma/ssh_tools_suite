@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-SSH Tunnel Manager - Professional Main Window
-Enterprise-grade interface with clean design
+SSH Tunnel Manager - Professional Enterprise Interface
+Clean, purposeful, information-dense design inspired by Linear and VS Code
 """
 
 import sys
@@ -22,13 +22,12 @@ from ..core.tunnel_process import TunnelProcess
 from ..core.monitor import TunnelMonitorThread
 from ..core.constants import APP_NAME
 
-# Import professional components
+# Professional components
 from .components.professional_toolbar import ProfessionalToolbar
-from .widgets.professional_cards import ProfessionalTunnelCardsWidget
-from .widgets.professional_dashboard import ProfessionalDashboard
+from .widgets.professional_tunnel_list import ProfessionalTunnelList
 from .widgets.professional_log import ProfessionalLogWidget, log_level_from_message
 
-# Import existing components
+# Existing service handlers
 from .components.file_operations import FileOperationsManager
 from .components.rtsp_handler import RTSPHandler
 from .components.rdp_handler import RDPHandler
@@ -37,8 +36,8 @@ from .components.powershell_generator import PowerShellGeneratorManager
 from .components.ssh_key_generator import SSHKeyManager
 from .components.ssh_key_deployment import SSHKeyDeploymentManager
 
-# Import professional theme
-from .styles.professional_theme import get_professional_stylesheet
+# Professional theme
+from .styles.professional_theme import get_professional_stylesheet, SPACING
 
 
 class SSHTunnelManager(QMainWindow):
@@ -46,9 +45,9 @@ class SSHTunnelManager(QMainWindow):
     
     def __init__(self):
         super().__init__()
-        self.setWindowTitle(f"{APP_NAME} - Professional Edition")
-        self.setGeometry(100, 100, 1400, 900)
-        self.setMinimumSize(1200, 700)
+        self.setWindowTitle(f"{APP_NAME}")
+        self.setGeometry(100, 100, 1300, 850)
+        self.setMinimumSize(1100, 650)
         
         # Apply professional stylesheet
         self.setStyleSheet(get_professional_stylesheet())
@@ -60,13 +59,12 @@ class SSHTunnelManager(QMainWindow):
         self.config_manager = ConfigurationManager()
         self.active_tunnels: Dict[str, TunnelProcess] = {}
         
-        # Professional UI Components
+        # UI Components
         self.toolbar = ProfessionalToolbar(self)
-        self.dashboard = ProfessionalDashboard(self)
-        self.tunnel_cards = ProfessionalTunnelCardsWidget(self)
+        self.tunnel_list = ProfessionalTunnelList(self)
         self.log_widget = ProfessionalLogWidget(self)
         
-        # Existing service handlers
+        # Service handlers
         self.file_ops_manager = FileOperationsManager(self)
         self.rtsp_handler = RTSPHandler(self)
         self.rdp_handler = RDPHandler(self)
@@ -81,83 +79,65 @@ class SSHTunnelManager(QMainWindow):
         self._setup_menu()
         self._setup_system_tray()
         
-        # Initialize data
+        # Initialize
         self._load_configurations()
         self._start_monitoring()
     
     def _set_window_icon(self):
-        """Set a custom window icon."""
+        """Set window icon."""
         try:
-            from .styles.professional_theme import COLORS
             pixmap = QPixmap(64, 64)
             pixmap.fill(Qt.transparent)
             
             painter = QPainter(pixmap)
             painter.setRenderHint(QPainter.Antialiasing)
-            
-            # Professional icon design
             painter.setBrush(QBrush(Qt.GlobalColor.blue))
             painter.setPen(Qt.NoPen)
             painter.drawEllipse(4, 4, 56, 56)
-            
-            painter.setPen(Qt.GlobalColor.white)
-            painter.setBrush(QBrush(Qt.GlobalColor.white))
-            painter.drawRect(16, 24, 32, 4)
-            painter.drawRect(16, 32, 32, 4)
-            
             painter.end()
             
-            icon = QIcon(pixmap)
-            self.setWindowIcon(icon)
+            self.setWindowIcon(QIcon(pixmap))
         except:
             pass
     
     def _setup_ui(self):
-        """Setup the professional UI."""
+        """Setup main UI."""
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         main_layout = QVBoxLayout(central_widget)
-        main_layout.setContentsMargins(12, 12, 12, 12)
-        main_layout.setSpacing(12)
+        main_layout.setContentsMargins(SPACING['lg'], SPACING['lg'], SPACING['lg'], SPACING['lg'])
+        main_layout.setSpacing(SPACING['lg'])
         
-        # Professional toolbar
+        # Toolbar
         main_layout.addWidget(self.toolbar)
         
-        # Content area with splitter
-        content_splitter = QSplitter(Qt.Vertical)
-        content_splitter.setHandleWidth(2)
+        # Main content splitter
+        splitter = QSplitter(Qt.Vertical)
+        splitter.setHandleWidth(2)
         
-        # Top section: Dashboard + Tunnel Cards
-        top_section = QWidget()
-        top_layout = QVBoxLayout(top_section)
-        top_layout.setContentsMargins(0, 0, 0, 0)
-        top_layout.setSpacing(12)
+        # Tunnel list
+        splitter.addWidget(self.tunnel_list)
         
-        top_layout.addWidget(self.dashboard)
-        self.dashboard.setVisible(False)  # Hidden by default
-        top_layout.addWidget(self.tunnel_cards)
+        # Log widget
+        splitter.addWidget(self.log_widget)
         
-        content_splitter.addWidget(top_section)
-        content_splitter.addWidget(self.log_widget)
+        # Set proportions
+        splitter.setStretchFactor(0, 3)
+        splitter.setStretchFactor(1, 1)
         
-        # Set proportions: 80% cards, 20% logs
-        content_splitter.setStretchFactor(0, 8)
-        content_splitter.setStretchFactor(1, 2)
-        content_splitter.setSizes([720, 180])
-        
-        main_layout.addWidget(content_splitter)
+        main_layout.addWidget(splitter)
         
         # Status bar
         status_bar = self.statusBar()
         status_bar.showMessage("Ready")
         
-        # Welcome message
-        self.log("SSH Tunnel Manager started successfully", "success")
+        # Welcome log
+        self.log("SSH Tunnel Manager initialized", "success")
         self.log(f"Loaded {len(self.config_manager.get_all_configurations())} tunnel configurations", "info")
     
     def _setup_connections(self):
-        """Connect all signal handlers."""
-        # Toolbar signals
+        """Connect signals."""
+        # Toolbar
         self.toolbar.add_tunnel.connect(self._add_tunnel)
         self.toolbar.edit_tunnel.connect(self._edit_tunnel)
         self.toolbar.delete_tunnel.connect(self._delete_tunnel)
@@ -165,7 +145,6 @@ class SSHTunnelManager(QMainWindow):
         self.toolbar.stop_tunnel.connect(self._stop_tunnel)
         self.toolbar.test_tunnel.connect(self._test_tunnel)
         self.toolbar.browse_files.connect(self._browse_files)
-        self.toolbar.browse_remote_files.connect(self._browse_remote_files)
         self.toolbar.open_web_browser.connect(self._open_web_browser)
         self.toolbar.launch_rtsp.connect(self.rtsp_handler.launch_rtsp)
         self.toolbar.launch_rdp.connect(self.rdp_handler.launch_rdp)
@@ -173,16 +152,12 @@ class SSHTunnelManager(QMainWindow):
         self.toolbar.show_powershell_generator.connect(self.powershell_generator.show_generator)
         self.toolbar.show_ssh_key_manager.connect(self._setup_ssh_key)
         
-        # Tunnel cards signals
-        self.tunnel_cards.start_tunnel.connect(self._start_tunnel_by_name)
-        self.tunnel_cards.stop_tunnel.connect(self._stop_tunnel_by_name)
-        self.tunnel_cards.edit_tunnel.connect(self._edit_tunnel_by_name)
-        self.tunnel_cards.delete_tunnel.connect(self._delete_tunnel_by_name)
-        self.tunnel_cards.files_tunnel.connect(self._browse_files_by_name)
-        self.tunnel_cards.web_tunnel.connect(self._open_web_browser_by_name)
-        self.tunnel_cards.rtsp_tunnel.connect(self._launch_rtsp_by_name)
-        self.tunnel_cards.rdp_tunnel.connect(self._launch_rdp_by_name)
-        self.tunnel_cards.test_tunnel.connect(self._test_tunnel_by_name)
+        # Tunnel list
+        self.tunnel_list.selection_changed.connect(self._on_selection_changed)
+        self.tunnel_list.start_tunnel.connect(self._start_tunnel_by_name)
+        self.tunnel_list.stop_tunnel.connect(self._stop_tunnel_by_name)
+        self.tunnel_list.edit_tunnel.connect(self._edit_tunnel_by_name)
+        self.tunnel_list.delete_tunnel.connect(self._delete_tunnel_by_name)
         
         # File operations
         self.file_ops_manager.log_message.connect(lambda msg: self.log(msg, log_level_from_message(msg)))
@@ -190,7 +165,7 @@ class SSHTunnelManager(QMainWindow):
         self.file_ops_manager.refresh_table.connect(self._refresh_ui)
         self.file_ops_manager.set_managers(self.config_manager, self.active_tunnels)
         
-        # Setup service handlers
+        # Service handlers
         self.rtsp_handler.set_managers(self.config_manager, self.active_tunnels, self.log)
         self.rdp_handler.set_managers(self.config_manager, self.active_tunnels, self.log)
     
@@ -198,38 +173,34 @@ class SSHTunnelManager(QMainWindow):
         """Setup menu bar."""
         menubar = self.menuBar()
         
-        # File menu
+        # File
         file_menu = menubar.addMenu("File")
         exit_action = QAction("Exit", self)
         exit_action.triggered.connect(self.close)
         file_menu.addAction(exit_action)
         
-        # Tools menu
+        # Tools
         tools_menu = menubar.addMenu("Tools")
-        ssh_key_action = QAction("🔑 Generate SSH Key...", self)
+        
+        ssh_key_action = QAction("Generate SSH Key...", self)
         ssh_key_action.triggered.connect(self._setup_ssh_key)
         tools_menu.addAction(ssh_key_action)
         
-        deploy_key_action = QAction("📤 Deploy SSH Key...", self)
+        deploy_key_action = QAction("Deploy SSH Key...", self)
         deploy_key_action.triggered.connect(self._deploy_ssh_key)
         tools_menu.addAction(deploy_key_action)
         
-        powershell_action = QAction("⚡ PowerShell SSH Setup...", self)
+        tools_menu.addSeparator()
+        
+        scanner_action = QAction("Network Scanner", self)
+        scanner_action.triggered.connect(self.network_scanner.show_scanner)
+        tools_menu.addAction(scanner_action)
+        
+        powershell_action = QAction("PowerShell Setup...", self)
         powershell_action.triggered.connect(self.powershell_generator.show_generator)
         tools_menu.addAction(powershell_action)
         
-        tools_menu.addSeparator()
-        network_scanner_action = QAction("🔍 Network Scanner", self)
-        network_scanner_action.triggered.connect(self.network_scanner.show_scanner)
-        tools_menu.addAction(network_scanner_action)
-        
-        # View menu
-        view_menu = menubar.addMenu("View")
-        toggle_dashboard_action = QAction("Toggle Dashboard", self)
-        toggle_dashboard_action.triggered.connect(self._toggle_dashboard)
-        view_menu.addAction(toggle_dashboard_action)
-        
-        # Help menu
+        # Help
         help_menu = menubar.addMenu("Help")
         about_action = QAction("About", self)
         about_action.triggered.connect(self._show_about)
@@ -241,17 +212,7 @@ class SSHTunnelManager(QMainWindow):
             return
         
         self.tray_icon = QSystemTrayIcon(self)
-        
-        try:
-            icon = self.windowIcon()
-            if icon.isNull():
-                icon = self.style().standardIcon(self.style().StandardPixmap.SP_ComputerIcon)
-        except:
-            pixmap = QPixmap(16, 16)
-            pixmap.fill(Qt.blue)
-            icon = QIcon(pixmap)
-        
-        self.tray_icon.setIcon(icon)
+        self.tray_icon.setIcon(self.windowIcon())
         self.tray_icon.setToolTip("SSH Tunnel Manager")
         
         tray_menu = QMenu()
@@ -267,7 +228,7 @@ class SSHTunnelManager(QMainWindow):
         self.tray_icon.show()
     
     def _load_configurations(self):
-        """Load and display configurations."""
+        """Load configurations."""
         self.config_manager.load_configurations()
         self._refresh_ui()
     
@@ -279,36 +240,26 @@ class SSHTunnelManager(QMainWindow):
         self.monitor_thread.start()
     
     def _refresh_ui(self):
-        """Refresh all UI components."""
+        """Refresh UI components."""
         configs = self.config_manager.get_all_configurations()
-        
-        # Update dashboard stats
-        active_count = len([t for t in self.active_tunnels.values() if t.is_running])
-        total_count = len(configs)
-        self.dashboard.update_stats(active_count, total_count)
-        
-        # Update tunnel cards
-        self.tunnel_cards.update_tunnels(configs, self.active_tunnels)
-        
-        # Update toolbar button states
-        self.toolbar.update_button_states(False, False)
+        self.tunnel_list.refresh_table(configs, self.active_tunnels)
+    
+    def _on_selection_changed(self, has_selection: bool, config_name: str, is_active: bool):
+        """Handle selection changes."""
+        self.toolbar.update_button_states(has_selection, is_active)
+        self.selected_config_name = config_name if has_selection else None
     
     def _update_tunnel_status(self, name: str, is_running: bool):
-        """Update tunnel status from monitor."""
+        """Update tunnel status."""
         if name in self.active_tunnels:
             self.active_tunnels[name].is_running = is_running
         self._refresh_ui()
     
     def _handle_connection_lost(self, name: str):
-        """Handle connection lost event."""
-        self.log(f"Connection lost for tunnel: {name}", "warning")
+        """Handle connection lost."""
+        self.log(f"Connection lost: {name}", "warning")
     
-    def _toggle_dashboard(self):
-        """Toggle dashboard visibility."""
-        self.dashboard.setVisible(not self.dashboard.isVisible())
-    
-    # ==================== TUNNEL ACTIONS ====================
-    
+    # Tunnel actions
     def _add_tunnel(self):
         """Add new tunnel."""
         from PySide6.QtWidgets import QDialog
@@ -326,8 +277,10 @@ class SSHTunnelManager(QMainWindow):
                 self.log(f"Failed to add tunnel: {error_msg}", "error")
     
     def _edit_tunnel(self):
-        """Edit selected tunnel (placeholder - needs selection)."""
-        QMessageBox.information(self, "Info", "Please click Edit button on a tunnel card")
+        """Edit selected tunnel."""
+        if not hasattr(self, 'selected_config_name') or not self.selected_config_name:
+            return
+        self._edit_tunnel_by_name(self.selected_config_name)
     
     def _edit_tunnel_by_name(self, config_name: str):
         """Edit tunnel by name."""
@@ -336,7 +289,6 @@ class SSHTunnelManager(QMainWindow):
         
         config = self.config_manager.get_configuration(config_name)
         if not config:
-            QMessageBox.warning(self, "Error", f"Configuration '{config_name}' not found")
             return
         
         dialog = TunnelConfigDialog(config=config, parent=self)
@@ -348,37 +300,34 @@ class SSHTunnelManager(QMainWindow):
                 self.log(f"Updated tunnel: {updated_config.name}", "success")
             else:
                 QMessageBox.warning(self, "Error", error_msg)
-                self.log(f"Failed to update tunnel: {error_msg}", "error")
     
     def _delete_tunnel(self):
-        """Delete selected tunnel (placeholder)."""
-        QMessageBox.information(self, "Info", "Please click Delete button on a tunnel card")
+        """Delete selected tunnel."""
+        if not hasattr(self, 'selected_config_name') or not self.selected_config_name:
+            return
+        self._delete_tunnel_by_name(self.selected_config_name)
     
     def _delete_tunnel_by_name(self, config_name: str):
         """Delete tunnel by name."""
         reply = QMessageBox.question(
             self, "Confirm Delete",
-            f"Are you sure you want to delete tunnel '{config_name}'?",
+            f"Delete tunnel '{config_name}'?",
             QMessageBox.Yes | QMessageBox.No
         )
         
         if reply == QMessageBox.Yes:
-            # Stop if running
             if config_name in self.active_tunnels:
                 self.active_tunnels[config_name].stop()
                 del self.active_tunnels[config_name]
             
-            success = self.config_manager.delete_configuration(config_name)
-            if success:
+            if self.config_manager.delete_configuration(config_name):
                 self._refresh_ui()
                 self.log(f"Deleted tunnel: {config_name}", "success")
-            else:
-                QMessageBox.warning(self, "Error", f"Failed to delete configuration")
-                self.log(f"Failed to delete tunnel: {config_name}", "error")
     
     def _start_tunnel(self):
-        """Start selected tunnel (placeholder)."""
-        QMessageBox.information(self, "Info", "Please click Start button on a tunnel card")
+        """Start selected tunnel."""
+        if hasattr(self, 'selected_config_name') and self.selected_config_name:
+            self._start_tunnel_by_name(self.selected_config_name)
     
     def _start_tunnel_by_name(self, config_name: str):
         """Start tunnel by name."""
@@ -392,103 +341,61 @@ class SSHTunnelManager(QMainWindow):
             self.active_tunnels[config_name] = TunnelProcess(config, None)
         
         tunnel = self.active_tunnels[config_name]
-        tunnel.status = tunnel.STATUS_STARTING
-        self._refresh_ui()
-        
         if tunnel.start():
             self.log(f"Tunnel started: {config_name}", "success")
-            self._refresh_ui()
         else:
             self.log(f"Failed to start tunnel: {config_name}", "error")
-            self._refresh_ui()
+        
+        self._refresh_ui()
     
     def _stop_tunnel(self):
-        """Stop selected tunnel (placeholder)."""
-        QMessageBox.information(self, "Info", "Please click Stop button on a tunnel card")
+        """Stop selected tunnel."""
+        if hasattr(self, 'selected_config_name') and self.selected_config_name:
+            self._stop_tunnel_by_name(self.selected_config_name)
     
     def _stop_tunnel_by_name(self, config_name: str):
         """Stop tunnel by name."""
-        if config_name not in self.active_tunnels:
-            return
-        
-        self.log(f"Stopping tunnel: {config_name}", "info")
-        tunnel = self.active_tunnels[config_name]
-        tunnel.stop()
-        self._refresh_ui()
-        self.log(f"Tunnel stopped: {config_name}", "success")
+        if config_name in self.active_tunnels:
+            self.log(f"Stopping tunnel: {config_name}", "info")
+            self.active_tunnels[config_name].stop()
+            self._refresh_ui()
     
     def _test_tunnel(self):
         """Test tunnel connection."""
-        QMessageBox.information(self, "Info", "Please select a running tunnel first")
-    
-    def _browse_files(self):
-        """Browse files via SFTP."""
-        QMessageBox.information(self, "Info", "Please select a running tunnel first")
-    
-    def _browse_files_by_name(self, config_name: str):
-        """Browse files for tunnel by name."""
-        config = self.config_manager.get_configuration(config_name)
-        if config:
-            self.file_ops_manager.browse_files(config_name, config)
-    
-    def _browse_remote_files(self):
-        """Browse remote files."""
-        QMessageBox.information(self, "Info", "Please select a running tunnel first")
-    
-    def _open_web_browser(self):
-        """Open web browser."""
-        QMessageBox.information(self, "Info", "Please select a running tunnel with web service")
-    
-    def _open_web_browser_by_name(self, config_name: str):
-        """Open web browser for specific tunnel."""
-        config = self.config_manager.get_configuration(config_name)
-        if config and config.tunnel_type == 'local':
-            url = f"http://localhost:{config.local_port}"
-            webbrowser.open(url)
-            self.log(f"Opened web browser: {url}", "info")
-    
-    def _launch_rtsp_by_name(self, config_name: str):
-        """Launch RTSP stream for specific tunnel."""
-        self.rtsp_handler.launch_rtsp_by_name(config_name)
-    
-    def _launch_rdp_by_name(self, config_name: str):
-        """Launch RDP connection for specific tunnel."""
-        self.rdp_handler.launch_rdp_by_name(config_name)
-    
-    def _test_tunnel_by_name(self, config_name: str):
-        """Test tunnel connection by name."""
         from ..utils.connection_tester import ConnectionTester
         
-        config = self.config_manager.get_configuration(config_name)
+        if not hasattr(self, 'selected_config_name') or not self.selected_config_name:
+            return
+        
+        config = self.config_manager.get_configuration(self.selected_config_name)
         if not config:
             return
         
-        is_running = config_name in self.active_tunnels and self.active_tunnels[config_name].is_running
-        if not is_running:
-            QMessageBox.warning(self, "Test Error", f"Tunnel '{config_name}' is not running")
-            return
+        self.log(f"Testing tunnel: {self.selected_config_name}", "info")
+        success, message = ConnectionTester.test_tunnel_connection(config)
         
-        self.log(f"Testing tunnel: {config_name}", "info")
-        
-        try:
-            if config.tunnel_type == 'local':
-                if ConnectionTester.test_local_port(config.local_port):
-                    success, message = ConnectionTester.test_tunnel_connection(config)
-                    if success:
-                        self.log(f"Test successful: {message}", "success")
-                        QMessageBox.information(self, "Test Result", f"Tunnel '{config_name}' is working correctly!\n\n{message}")
-                    else:
-                        self.log(f"Test warning: {message}", "warning")
-                        QMessageBox.warning(self, "Test Result", f"Tunnel '{config_name}' has issues:\n\n{message}")
-                else:
-                    self.log(f"Test failed: Local port {config.local_port} not accessible", "error")
-                    QMessageBox.critical(self, "Test Result", f"Tunnel test failed!\n\nLocal port {config.local_port} is not accessible")
-            else:
-                self.log(f"Remote tunnel testing limited", "info")
-                QMessageBox.information(self, "Test Result", f"Remote tunnel '{config_name}' appears to be running")
-        except Exception as e:
-            self.log(f"Error testing tunnel: {str(e)}", "error")
-            QMessageBox.critical(self, "Test Error", f"Test failed: {str(e)}")
+        if success:
+            self.log(f"Test successful: {message}", "success")
+            QMessageBox.information(self, "Test Result", f"Success: {message}")
+        else:
+            self.log(f"Test failed: {message}", "error")
+            QMessageBox.warning(self, "Test Result", f"Failed: {message}")
+    
+    def _browse_files(self):
+        """Browse files."""
+        if hasattr(self, 'selected_config_name') and self.selected_config_name:
+            config = self.config_manager.get_configuration(self.selected_config_name)
+            if config:
+                self.file_ops_manager.browse_files(self.selected_config_name, config)
+    
+    def _open_web_browser(self):
+        """Open web browser."""
+        if hasattr(self, 'selected_config_name') and self.selected_config_name:
+            config = self.config_manager.get_configuration(self.selected_config_name)
+            if config and config.tunnel_type == 'local':
+                url = f"http://localhost:{config.local_port}"
+                webbrowser.open(url)
+                self.log(f"Opened browser: {url}", "info")
     
     def _setup_ssh_key(self):
         """Setup SSH key."""
@@ -500,31 +407,16 @@ class SSHTunnelManager(QMainWindow):
     
     def _show_about(self):
         """Show about dialog."""
-        about_text = f"""
-        <div style='text-align: center; background: #1a1f2e; padding: 20px; border-radius: 12px;'>
-            <h2 style='color: #00d4ff; margin-bottom: 10px;'>🔐 {APP_NAME}</h2>
-            <p style='font-size: 12pt; color: #e5e7eb; margin: 5px 0;'>
-                <b>Modern SSH Tunnel Manager</b>
-            </p>
-            <hr style='border: none; border-top: 2px solid #00d4ff; margin: 15px 0;'>
-            <p style='color: #9ca3af; margin: 10px 0;'>
-                Beautiful, modern interface for managing<br>
-                SSH tunnels and secure connections.
-            </p>
-            <p style='color: #6b7280; font-size: 9pt; margin-top: 20px;'>
-                Powered by Python & PySide6 ⚡
-            </p>
-        </div>
-        """
-        msg_box = QMessageBox(self)
-        msg_box.setWindowTitle("About")
-        msg_box.setTextFormat(Qt.RichText)
-        msg_box.setText(about_text)
-        msg_box.setStandardButtons(QMessageBox.Ok)
-        msg_box.exec()
+        QMessageBox.about(
+            self,
+            "About",
+            f"<h3>{APP_NAME}</h3>"
+            "<p>Professional SSH tunnel management</p>"
+            "<p>Secure connections, port forwarding, and remote access</p>"
+        )
     
     def log(self, message: str, level: str = "info"):
-        """Log a message with level."""
+        """Log a message."""
         self.log_widget.add_log(message, level)
     
     def closeEvent(self, event):
@@ -537,11 +429,9 @@ class SSHTunnelManager(QMainWindow):
     
     def _quit_application(self):
         """Quit application."""
-        # Stop all tunnels
         for tunnel in self.active_tunnels.values():
             tunnel.stop()
         
-        # Stop monitoring
         if hasattr(self, 'monitor_thread'):
             self.monitor_thread.stop()
             self.monitor_thread.wait()

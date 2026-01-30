@@ -59,7 +59,7 @@ class SSHTunnelManagerApp(SSHTunnelManager):
         self._actions.config_manager = self.config_manager
         self._actions.active_tunnels = self.active_tunnels
         self._actions.log = self.log
-        self._actions.refresh_table = self._refresh_table
+        self._actions.refresh_table = self._refresh_ui  # Modern version uses _refresh_ui
         
     def add_tunnel(self):
         """Add a new tunnel configuration."""
